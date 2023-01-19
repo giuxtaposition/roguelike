@@ -1,14 +1,17 @@
 <script lang="ts">
-    import { onDestroy, onMount } from "svelte"
+    import { onMount } from "svelte"
 
     let canvas: HTMLCanvasElement
-
     let context: CanvasRenderingContext2D
-    const width = window.innerWidth
-    const height = window.innerHeight
+    const tileSize = 64
+    const numTiles = 9
+    const uiWidth = 4
 
     let x = 0
     let y = 0
+
+    const spritesheet = new Image()
+    spritesheet.src = "spritesheet.png"
 
     $: setInterval(draw, 15)
 
@@ -21,25 +24,42 @@
 
         if (e.key == "d") x += 1
     }
-
     function draw() {
-        console.log("drawing")
-        console.log("x", x)
-        console.log("y", y)
-        context.clearRect(0, 0, width, height)
-        context.fillRect(x * 20, y * 20, 20, 20)
+        context.clearRect(0, 0, canvas.width, canvas.height)
+
+        drawSprite(0, x, y)
+    }
+
+    function drawSprite(sprite: number, x: number, y: number) {
+        context.drawImage(
+            spritesheet,
+            sprite * 16,
+            0,
+            16,
+            16,
+            x * tileSize,
+            y * tileSize,
+            tileSize,
+            tileSize
+        )
     }
 
     onMount(() => {
         context = canvas.getContext("2d")
-    })
+        canvas.width = tileSize * (numTiles + uiWidth)
+        canvas.height = tileSize * numTiles
+        canvas.style.width = canvas.width + "px"
+        canvas.style.height = canvas.height + "px"
 
-    onDestroy(() => {})
+        context.imageSmoothingEnabled = false
+    })
 </script>
 
-<canvas bind:this={canvas} {width} {height} />
+<canvas bind:this={canvas} />
 <svelte:window on:keydown|preventDefault={onKeyPress} />
 
 <style lang="sass">
-
+canvas
+    margin: 1rem
+    outline: 1px solid white
 </style>
