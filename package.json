@@ -3,6 +3,7 @@
     "description": "a barebones roguelike for the web",
     "version": "0.1.0",
     "author": "giuxtaposition",
+    "homepage": "https://github.com/giuxtaposition/roguelike/",
     "private": true,
     "scripts": {
         "dev": "vite",
@@ -10,7 +11,8 @@
         "preview": "vite preview",
         "test": "vitest",
         "coverage": "vitest run --coverage",
-        "check": "svelte-check --tsconfig ./tsconfig.json"
+        "check": "svelte-check --tsconfig ./tsconfig.json",
+        "deploy": "touch dist/.nojekyll && gh-pages -d dist -t true"
     },
     "type": "module",
     "devDependencies": {
@@ -19,6 +21,7 @@
         "@testing-library/svelte": "^3.2.2",
         "@testing-library/user-event": "^14.4.3",
         "@tsconfig/svelte": "^3.0.0",
+        "gh-pages": "^4.0.0",
         "jsdom": "^21.0.0",
         "sass": "^1.56.1",
         "svelte": "^3.55.1",
