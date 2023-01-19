@@ -22,10 +22,19 @@
         context.clearRect(0, 0, canvas.width, canvas.height)
         drawTiles()
         drawPlayer()
+        drawEnemies()
+    }
+
+    function drawEnemies() {
+        for (let i = 0; i < game.enemies.length; i++) {
+            const enemy = game.enemies[i]
+
+            drawSprite(enemy.sprite, enemy.tile.x, enemy.tile.y)
+        }
     }
 
     function drawPlayer() {
-        drawSprite(0, game.player.tile.x, game.player.tile.y)
+        drawSprite(game.player.sprite, game.player.tile.x, game.player.tile.y)
     }
 
     function drawTiles() {

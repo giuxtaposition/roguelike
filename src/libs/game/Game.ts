@@ -1,5 +1,14 @@
-import { randomRange, tryTo } from "../utils/utils"
-import { Player } from "./Entity"
+import { randomRange, shuffle, tryTo } from "../utils/utils"
+import {
+    Black,
+    CoolDuck,
+    DogWithMustache,
+    Entity,
+    OneEyedDemon,
+    Player,
+    Slime,
+    type Enemy,
+} from "./Entity"
 import { Floor, Wall, type Tile } from "./Tile"
 
 export default class Game {
@@ -7,8 +16,10 @@ export default class Game {
     readonly numTiles = 9
     readonly uiWidth = 4
 
-    player: Player
+    level = 1
     tiles: Tile[][] = []
+    enemies: Entity[] = []
+    player: Player
 
     constructor() {
         this.generateLevel()
@@ -50,6 +61,8 @@ export default class Game {
                 this.randomPassableTile().getConnectedTiles().length
             )
         })
+
+        this.generateEnemies()
     }
 
     private generateTiles() {
@@ -68,6 +81,26 @@ export default class Game {
             }
         }
         return passableTiles
+    }
+
+    generateEnemies() {
+        let numberOfEnemies = this.level + 1
+
+        for (let i = 0; i < numberOfEnemies; i++) {
+            this.spawnEnemies()
+        }
+    }
+
+    spawnEnemies() {
+        let enemyType = shuffle<Enemy>([
+            CoolDuck,
+            DogWithMustache,
+            Black,
+            Slime,
+            OneEyedDemon,
+        ])[0]
+
+        this.enemies.push(new enemyType(this.randomPassableTile()))
     }
 
     private inBounds(x: number, y: number) {

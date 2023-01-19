@@ -4,7 +4,7 @@ export class Entity {
     tile: Tile
     sprite: number
     health: number
-    isPlayer: boolean
+    isPlayer: boolean = false
 
     constructor(tile: Tile, sprite: number, health: number) {
         this.move(tile)
@@ -40,3 +40,40 @@ export class Player extends Entity {
         this.isPlayer = true
     }
 }
+
+export class CoolDuck extends Entity {
+    constructor(tile: Tile) {
+        super(tile, 4, 3)
+    }
+}
+
+export class DogWithMustache extends Entity {
+    constructor(tile: Tile) {
+        super(tile, 5, 1)
+    }
+}
+
+export class Black extends Entity {
+    constructor(tile: Tile) {
+        super(tile, 6, 2)
+    }
+}
+
+export class Slime extends Entity {
+    constructor(tile: Tile) {
+        super(tile, 7, 1)
+    }
+}
+
+export class OneEyedDemon extends Entity {
+    constructor(tile: Tile) {
+        super(tile, 8, 3)
+    }
+}
+
+export type Enemy =
+    | typeof CoolDuck
+    | typeof DogWithMustache
+    | typeof Black
+    | typeof Slime
+    | typeof OneEyedDemon
