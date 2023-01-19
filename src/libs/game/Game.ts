@@ -1,4 +1,5 @@
 import { randomRange, tryTo } from "../utils/utils"
+import { Player } from "./Entity"
 import { Floor, Wall, type Tile } from "./Tile"
 
 export default class Game {
@@ -6,16 +7,13 @@ export default class Game {
     readonly numTiles = 9
     readonly uiWidth = 4
 
+    player: Player
     tiles: Tile[][] = []
-    x = 0
-    y = 0
 
     constructor() {
         this.generateLevel()
 
-        const startingTile = this.randomPassableTile()
-        this.x = startingTile.x
-        this.y = startingTile.y
+        this.player = new Player(this.randomPassableTile())
     }
 
     public getTile(x: number, y: number): Tile {
@@ -29,16 +27,16 @@ export default class Game {
     public movePlayer(direction: Direction) {
         switch (direction) {
             case Direction.UP:
-                this.y -= 1
+                this.player.tryToMove(0, -1)
                 break
             case Direction.DOWN:
-                this.y += 1
+                this.player.tryToMove(0, 1)
                 break
             case Direction.LEFT:
-                this.x -= 1
+                this.player.tryToMove(-1, 0)
                 break
             case Direction.RIGHT:
-                this.x += 1
+                this.player.tryToMove(1, 0)
                 break
             default:
                 break

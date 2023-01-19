@@ -25,7 +25,7 @@
     }
 
     function drawPlayer() {
-        drawSprite(0, game.x, game.y)
+        drawSprite(0, game.player.tile.x, game.player.tile.y)
     }
 
     function drawTiles() {

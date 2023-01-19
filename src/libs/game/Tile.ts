@@ -1,5 +1,6 @@
 import { shuffle } from "../utils/utils"
 import type Game from "./Game"
+import type { Entity } from "./Entity"
 
 export class Tile {
     x: number
@@ -7,6 +8,7 @@ export class Tile {
     sprite: number
     passable: boolean
     game: Game
+    entity: Entity
 
     constructor(
         x: number,
@@ -39,8 +41,8 @@ export class Tile {
         return connectedTiles
     }
 
-    getNeighbor(dx: number, dy: number) {
-        return this.game.getTile(this.x + dx, this.y + dy)
+    getNeighbor(distanceX: number, distanceY: number) {
+        return this.game.getTile(this.x + distanceX, this.y + distanceY)
     }
 
     getAdjacentNeighbors() {
