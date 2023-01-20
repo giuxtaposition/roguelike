@@ -9,10 +9,9 @@
         "dev": "vite",
         "build": "vite build",
         "preview": "vite preview",
-        "test": "vitest",
+        "test": "vitest run",
         "coverage": "vitest run --coverage",
-        "check": "svelte-check --tsconfig ./tsconfig.json",
-        "deploy": "touch dist/.nojekyll && gh-pages -d dist -t true"
+        "check": "svelte-check --tsconfig ./tsconfig.json"
     },
     "type": "module",
     "devDependencies": {

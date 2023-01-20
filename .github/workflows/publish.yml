@@ -1,0 +1,28 @@
+name: Publish
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy-pages:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: checkout main
+        uses: actions/checkout@v2
+        with:
+          ref: main
+      - name: install dependencies
+        run: yarn install
+      - name: build
+        run: yarn build
+      - name: deploy on github pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.github_token }}
+          publish_dir: ${{ github.workspace }}/dist
+          enable_jekyll: false
+          user_name: ${{ github.actor }}
+          user_email: ${{ github.actor }}@users.noreply.github.com
+          commit_message: ${{ github.event.head_commit.message }}
