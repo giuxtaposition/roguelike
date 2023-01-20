@@ -27,30 +27,45 @@ export default class Game {
         this.player = new Player(this.randomPassableTile())
     }
 
+    public movePlayer(direction: Direction) {
+        switch (direction) {
+            case Direction.UP:
+                this.tryToMove(this.player, 0, -1)
+                break
+            case Direction.DOWN:
+                this.tryToMove(this.player, 0, 1)
+                break
+            case Direction.LEFT:
+                this.tryToMove(this.player, -1, 0)
+                break
+            case Direction.RIGHT:
+                this.tryToMove(this.player, 1, 0)
+                break
+            default:
+                break
+        }
+    }
+
     public getTile(x: number, y: number): Tile {
         if (this.inBounds(x, y)) {
             return this.tiles[x][y]
         } else {
-            return new Wall(x, y, this)
+            return new Wall(x, y)
         }
     }
 
-    public movePlayer(direction: Direction) {
-        switch (direction) {
-            case Direction.UP:
-                this.player.tryToMove(0, -1)
-                break
-            case Direction.DOWN:
-                this.player.tryToMove(0, 1)
-                break
-            case Direction.LEFT:
-                this.player.tryToMove(-1, 0)
-                break
-            case Direction.RIGHT:
-                this.player.tryToMove(1, 0)
-                break
-            default:
-                break
+    private tryToMove(entity: Entity, distanceX: number, distanceY: number) {
+        let newTile = this.getTile(
+            entity.tile.x + distanceX,
+            entity.tile.y + distanceY
+        )
+
+        if (newTile.passable) {
+            if (!newTile.entity) {
+                entity.move(newTile)
+            }
+
+            return true
         }
     }
 
@@ -58,7 +73,7 @@ export default class Game {
         tryTo("generate map", () => {
             return (
                 this.generateTiles() ==
-                this.randomPassableTile().getConnectedTiles().length
+                this.getConnectedTiles(this.randomPassableTile()).length
             )
         })
 
@@ -67,14 +82,14 @@ export default class Game {
 
     private generateTiles() {
         let passableTiles = 0
+
         for (let i = 0; i < this.numTiles; i++) {
             this.tiles[i] = []
-
             for (let j = 0; j < this.numTiles; j++) {
                 if (Math.random() < 0.3 || !this.inBounds(i, j)) {
-                    this.tiles[i][j] = new Wall(i, j, this)
+                    this.tiles[i][j] = new Wall(i, j)
                 } else {
-                    this.tiles[i][j] = new Floor(i, j, this)
+                    this.tiles[i][j] = new Floor(i, j)
 
                     passableTiles++
                 }
@@ -83,7 +98,7 @@ export default class Game {
         return passableTiles
     }
 
-    generateEnemies() {
+    private generateEnemies() {
         let numberOfEnemies = this.level + 1
 
         for (let i = 0; i < numberOfEnemies; i++) {
@@ -91,7 +106,7 @@ export default class Game {
         }
     }
 
-    spawnEnemies() {
+    private spawnEnemies() {
         let enemyType = shuffle<Enemy>([
             CoolDuck,
             DogWithMustache,
@@ -101,6 +116,37 @@ export default class Game {
         ])[0]
 
         this.enemies.push(new enemyType(this.randomPassableTile()))
+    }
+
+    private getConnectedTiles(startingTile: Tile): Tile[] {
+        let connectedTiles: Tile[] = [startingTile]
+        let frontier: Tile[] = [startingTile]
+
+        while (frontier.length) {
+            let currentTile = frontier.pop()
+            let adjacentTiles = this.getAdjacentPassableTiles(
+                currentTile.x,
+                currentTile.y
+            ).filter(tile => !connectedTiles.includes(tile))
+
+            connectedTiles = connectedTiles.concat(adjacentTiles)
+            frontier = frontier.concat(adjacentTiles)
+        }
+
+        return connectedTiles
+    }
+
+    private getAdjacentPassableTiles(x: number, y: number): Tile[] {
+        return this.getAdjacentTiles(x, y).filter(tile => tile.passable)
+    }
+
+    private getAdjacentTiles(x: number, y: number): Tile[] {
+        return shuffle([
+            this.getTile(x, y - 1),
+            this.getTile(x, y + 1),
+            this.getTile(x - 1, y),
+            this.getTile(x + 1, y),
+        ])
     }
 
     private inBounds(x: number, y: number) {

@@ -1,6 +1,6 @@
 import type { Tile } from "./Tile"
 
-export class Entity {
+export abstract class Entity {
     tile: Tile
     sprite: number
     health: number
@@ -12,19 +12,7 @@ export class Entity {
         this.health = health
     }
 
-    tryToMove(distanceX: number, distanceY: number) {
-        let newTile = this.tile.getNeighbor(distanceX, distanceY)
-
-        if (newTile.passable) {
-            if (!newTile.entity) {
-                this.move(newTile)
-            }
-
-            return true
-        }
-    }
-
-    move(tile: Tile) {
+    public move(tile: Tile) {
         if (this.tile) {
             this.tile.entity = null
         }
