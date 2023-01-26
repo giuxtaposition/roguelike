@@ -15,6 +15,11 @@ export abstract class Tile {
         this.sprite = sprite
         this.passable = passable
     }
+
+    //manhattan distance
+    public distance(other: Tile) {
+        return Math.abs(this.x - other.x) + Math.abs(this.y - other.y)
+    }
 }
 
 export class Floor extends Tile {

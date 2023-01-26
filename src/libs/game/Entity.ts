@@ -5,11 +5,24 @@ export abstract class Entity {
     sprite: number
     health: number
     isPlayer: boolean = false
+    isAlive: boolean = true
 
     constructor(tile: Tile, sprite: number, health: number) {
         this.move(tile)
         this.sprite = sprite
         this.health = health
+    }
+
+    public update(
+        adjacentPassableTiles: Tile[],
+        player: Player,
+        tryToMove: (
+            entity: Entity,
+            distanceX: number,
+            distanceY: number
+        ) => void
+    ) {
+        this.getCloserToPlayer(adjacentPassableTiles, player, tryToMove)
     }
 
     public move(tile: Tile) {
@@ -19,6 +32,29 @@ export abstract class Entity {
 
         this.tile = tile
         tile.entity = this
+    }
+
+    private getCloserToPlayer(
+        adjacentPassableTiles: Tile[],
+        player: Player,
+        tryToMove: (
+            entity: Entity,
+            distanceX: number,
+            distanceY: number
+        ) => void
+    ) {
+        adjacentPassableTiles = adjacentPassableTiles.filter(
+            t => !t.entity || t.entity.isPlayer
+        )
+
+        if (adjacentPassableTiles.length) {
+            adjacentPassableTiles.sort(
+                (a, b) => a.distance(player.tile) - b.distance(player.tile)
+            )
+
+            let newTile = adjacentPassableTiles[0]
+            tryToMove(this, newTile.x - this.tile.x, newTile.y - this.tile.y)
+        }
     }
 }
 

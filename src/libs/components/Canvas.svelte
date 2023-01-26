@@ -38,9 +38,9 @@
     }
 
     function drawTiles() {
-        for (let i = 0; i < game.numTiles; i++) {
-            for (let j = 0; j < game.numTiles; j++) {
-                const tile = game.getTile(i, j)
+        for (let i = 0; i < game.map.numTiles; i++) {
+            for (let j = 0; j < game.map.numTiles; j++) {
+                const tile = game.map.getTile(i, j)
                 drawSprite(tile.sprite, tile.x, tile.y)
             }
         }
@@ -53,17 +53,18 @@
             0,
             16,
             16,
-            x * game.tileSize,
-            y * game.tileSize,
-            game.tileSize,
-            game.tileSize
+            x * game.map.tileSize,
+            y * game.map.tileSize,
+            game.map.tileSize,
+            game.map.tileSize
         )
     }
 
     onMount(() => {
         context = canvas.getContext("2d")
-        canvas.width = game.tileSize * (game.numTiles + game.uiWidth)
-        canvas.height = game.tileSize * game.numTiles
+        canvas.width =
+            game.map.tileSize * (game.map.numTiles + game.map.uiWidth)
+        canvas.height = game.map.tileSize * game.map.numTiles
         canvas.style.width = canvas.width + "px"
         canvas.style.height = canvas.height + "px"
 
