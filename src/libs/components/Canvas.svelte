@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte"
+    import type { Entity } from "../game/Entity"
     import Game, { Direction } from "../game/Game"
 
     let canvas: HTMLCanvasElement
@@ -30,11 +31,13 @@
             const enemy = game.enemies[i]
 
             drawSprite(enemy.sprite, enemy.tile.x, enemy.tile.y)
+            drawHealth(enemy, enemy.tile.x, enemy.tile.y)
         }
     }
 
     function drawPlayer() {
         drawSprite(game.player.sprite, game.player.tile.x, game.player.tile.y)
+        drawHealth(game.player, game.player.tile.x, game.player.tile.y)
     }
 
     function drawTiles() {
@@ -58,6 +61,18 @@
             game.map.tileSize,
             game.map.tileSize
         )
+    }
+
+    function drawHealth(entity: Entity, x: number, y: number) {
+        for (let i = 0; i < entity.health; i++) {
+            drawSprite(
+                9,
+
+                x + (i % 3) * (4 / 16),
+
+                y - Math.floor(i / 3) * (5 / 16)
+            )
+        }
     }
 
     onMount(() => {
