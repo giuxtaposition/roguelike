@@ -1,15 +1,17 @@
 import { shuffle } from "../utils/utils"
 import {
-    Black,
+    type Enemy,
     CoolDuck,
     DogWithMustache,
-    Entity,
-    OneEyedDemon,
-    Player,
+    Black,
     Slime,
-    type Enemy,
-} from "./Entity"
+    OneEyedDemon,
+} from "./entities/enemies"
+import type { Entity } from "./entities/Entity"
+import { Player } from "./entities/Player"
+
 import Map from "./Map"
+import type { Tile } from "./Tile"
 
 export default class Game {
     level = 1
@@ -27,16 +29,24 @@ export default class Game {
         let moved = false
         switch (direction) {
             case Direction.UP:
-                moved = this.tryToMove(this.player, 0, -1)
+                moved = this.player.tryToMove(
+                    this.getTileAtDistanceXY(this.player, 0, -1)
+                )
                 break
             case Direction.DOWN:
-                moved = this.tryToMove(this.player, 0, 1)
+                moved = this.player.tryToMove(
+                    this.getTileAtDistanceXY(this.player, 0, 1)
+                )
                 break
             case Direction.LEFT:
-                moved = this.tryToMove(this.player, -1, 0)
+                moved = this.player.tryToMove(
+                    this.getTileAtDistanceXY(this.player, -1, 0)
+                )
                 break
             case Direction.RIGHT:
-                moved = this.tryToMove(this.player, 1, 0)
+                moved = this.player.tryToMove(
+                    this.getTileAtDistanceXY(this.player, 1, 0)
+                )
                 break
             default:
                 break
@@ -50,14 +60,11 @@ export default class Game {
     private tick() {
         for (let i = this.enemies.length - 1; i >= 0; i--) {
             const currentEnemy = this.enemies[i]
-            if (currentEnemy.isAlive) {
+            if (currentEnemy.getIsAlive()) {
                 currentEnemy.update(
-                    this.map.getAdjacentPassableTiles(
-                        currentEnemy.tile.x,
-                        currentEnemy.tile.y
-                    ),
+                    this.map.getAdjacentTiles(currentEnemy.getTile()),
                     this.player,
-                    this.tryToMove.bind(this)
+                    this.getTileAtDistanceXY.bind(this)
                 )
             } else {
                 this.removeEnemy(i)
@@ -69,19 +76,13 @@ export default class Game {
         this.enemies.splice(index, 1)
     }
 
-    private tryToMove(entity: Entity, distanceX: number, distanceY: number) {
-        let newTile = this.map.getTile(
-            entity.tile.x + distanceX,
-            entity.tile.y + distanceY
-        )
-
-        if (newTile.passable) {
-            if (!newTile.entity) {
-                entity.move(newTile)
-            }
-
-            return true
-        }
+    private getTileAtDistanceXY(
+        entity: Entity,
+        distanceX: number,
+        distanceY: number
+    ): Tile {
+        const { x, y } = entity.getTile().getCoordinates()
+        return this.map.getTile(x + distanceX, y + distanceY)
     }
 
     private generateLevel() {

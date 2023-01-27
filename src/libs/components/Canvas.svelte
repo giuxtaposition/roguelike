@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte"
-    import type { Entity } from "../game/Entity"
+    import type { Entity } from "../game/entities/Entity"
+    import Map from "../game/Map"
     import Game, { Direction } from "../game/Game"
 
     let canvas: HTMLCanvasElement
@@ -29,22 +30,25 @@
     function drawEnemies() {
         for (let i = 0; i < game.enemies.length; i++) {
             const enemy = game.enemies[i]
+            const { x, y } = enemy.getTile().getCoordinates()
 
-            drawSprite(enemy.sprite, enemy.tile.x, enemy.tile.y)
-            drawHealth(enemy, enemy.tile.x, enemy.tile.y)
+            drawSprite(enemy.getSprite(), x, y)
+            drawHealth(enemy, x, y)
         }
     }
 
     function drawPlayer() {
-        drawSprite(game.player.sprite, game.player.tile.x, game.player.tile.y)
-        drawHealth(game.player, game.player.tile.x, game.player.tile.y)
+        const { x, y } = game.player.getTile().getCoordinates()
+        drawSprite(game.player.getSprite(), x, y)
+        drawHealth(game.player, x, y)
     }
 
     function drawTiles() {
-        for (let i = 0; i < game.map.numTiles; i++) {
-            for (let j = 0; j < game.map.numTiles; j++) {
+        for (let i = 0; i < Map.numTiles; i++) {
+            for (let j = 0; j < Map.numTiles; j++) {
                 const tile = game.map.getTile(i, j)
-                drawSprite(tile.sprite, tile.x, tile.y)
+                const { x, y } = tile.getCoordinates()
+                drawSprite(tile.getSprite(), x, y)
             }
         }
     }
@@ -56,15 +60,15 @@
             0,
             16,
             16,
-            x * game.map.tileSize,
-            y * game.map.tileSize,
-            game.map.tileSize,
-            game.map.tileSize
+            x * Map.tileSize,
+            y * Map.tileSize,
+            Map.tileSize,
+            Map.tileSize
         )
     }
 
     function drawHealth(entity: Entity, x: number, y: number) {
-        for (let i = 0; i < entity.health; i++) {
+        for (let i = 0; i < entity.getHealth(); i++) {
             drawSprite(
                 9,
 
@@ -77,9 +81,8 @@
 
     onMount(() => {
         context = canvas.getContext("2d")
-        canvas.width =
-            game.map.tileSize * (game.map.numTiles + game.map.uiWidth)
-        canvas.height = game.map.tileSize * game.map.numTiles
+        canvas.width = Map.tileSize * (Map.numTiles + Map.uiWidth)
+        canvas.height = Map.tileSize * Map.numTiles
         canvas.style.width = canvas.width + "px"
         canvas.style.height = canvas.height + "px"
 
