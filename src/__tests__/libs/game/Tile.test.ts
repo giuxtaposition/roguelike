@@ -4,14 +4,14 @@ import Map from "../../../libs/game/Map"
 describe("Tiles", () => {
     const map = new Map()
     test("new floor tile should be passable and have sprite number 2", () => {
-        const floor = new Floor(0, 0, map)
+        const floor = new Floor(1, 1, map)
 
         expect(floor.getIsPassable()).toBeTruthy()
         expect(floor.getSprite()).toBe(2)
     })
 
     test("new wall tile should not be passable and have sprite number 3", () => {
-        const wall = new Wall(0, 0, map)
+        const wall = new Wall(1, 1, map)
 
         expect(wall.getIsPassable()).toBeFalsy()
         expect(wall.getSprite()).toBe(3)
@@ -23,8 +23,10 @@ describe("Tiles", () => {
         expect(tile.distance(new Wall(15, -15, map))).toBe(15 + 15)
     })
 
-    test.todo(
-        "replace should replace current type of tile in map with new type of tile",
-        () => {}
-    )
+    test("replace should replace current type of tile in map with new type of tile", () => {
+        const tile = new Floor(1, 1, map)
+
+        tile.replace(Wall)
+        expect(map.getTile(1, 1)).toBeInstanceOf(Wall)
+    })
 })

@@ -9,7 +9,7 @@ describe("Entities", () => {
     const map = new Map()
 
     test("tryToMove should move entity to chosen tile if passable", () => {
-        const player = new Player(new Floor(0, 0, map))
+        const player = new Player(new Floor(0, 0, map), 3)
         const newTile = new Floor(4, 5, map)
         player.tryToMove(newTile)
 
@@ -19,7 +19,7 @@ describe("Entities", () => {
 
     test("tryToMove should not move entity to chosen tile if not passable", () => {
         const startingTile = new Floor(0, 0, map)
-        const player = new Player(startingTile)
+        const player = new Player(startingTile, 3)
         player.tryToMove(new Wall(4, 5, map))
 
         expect(player.getTile()).toEqual(startingTile)
@@ -28,7 +28,7 @@ describe("Entities", () => {
 
     test("tryToMove should not move entity to chosen tile if occupied but should attack", () => {
         const startingTile = new Floor(0, 0, map)
-        const player = new Player(startingTile)
+        const player = new Player(startingTile, 3)
         const newTile = new Floor(0, 1, map)
         const enemy = new OneEyedDemon(newTile)
         player.tryToMove(newTile)
@@ -40,7 +40,7 @@ describe("Entities", () => {
     })
 
     test("update should move enemy one step closer to player", () => {
-        const player = new Player(new Floor(1, 1, map))
+        const player = new Player(new Floor(1, 1, map), 3)
         const enemy = new OneEyedDemon(new Floor(0, 0, map))
         const adjacentPassableTiles = [
             new Floor(1, 0, map),
@@ -59,7 +59,7 @@ describe("Entities", () => {
     })
 
     test("update should not move enemy one step closer to player if all tiles are already occupied", () => {
-        const player = new Player(new Floor(1, 1, map))
+        const player = new Player(new Floor(1, 1, map), 3)
         const enemy = new OneEyedDemon(new Floor(0, 0, map))
 
         const tile1 = new Floor(0, 1, map)
@@ -80,7 +80,7 @@ describe("Entities", () => {
 
     test("update should not move enemy one step closer to player if it is stunned", () => {
         const enemyTile = new Floor(0, 0, map)
-        const player = new Player(new Floor(1, 1, map))
+        const player = new Player(new Floor(1, 1, map), 3)
         const enemy = new OneEyedDemon(enemyTile)
 
         player.tryToMove(enemyTile)

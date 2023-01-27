@@ -2,34 +2,58 @@
     import { onMount } from "svelte"
     import type { Entity } from "../game/entities/Entity"
     import Map from "../game/Map"
-    import Game, { Direction } from "../game/Game"
+    import Game, { Direction, GameState } from "../game/Game"
 
     let canvas: HTMLCanvasElement
     let context: CanvasRenderingContext2D
 
     const spritesheet = new Image()
     spritesheet.src = "spritesheet.png"
+    spritesheet.onload = showTitle
     const game = new Game()
 
     $: setInterval(draw, 15)
 
     function onKeyPress(e: KeyboardEvent) {
-        if (e.key == "w") game.movePlayer(Direction.UP)
-        if (e.key == "s") game.movePlayer(Direction.DOWN)
-        if (e.key == "a") game.movePlayer(Direction.LEFT)
-        if (e.key == "d") game.movePlayer(Direction.RIGHT)
+        switch (game.getGameState()) {
+            case GameState.Title:
+                game.start()
+                break
+            case GameState.GameOver:
+                showTitle()
+                break
+            case GameState.Running:
+                if (e.key == "w") game.movePlayer(Direction.UP)
+                if (e.key == "s") game.movePlayer(Direction.DOWN)
+                if (e.key == "a") game.movePlayer(Direction.LEFT)
+                if (e.key == "d") game.movePlayer(Direction.RIGHT)
+                break
+            default:
+                break
+        }
+    }
+
+    function showTitle() {
+        context.fillStyle = "rgba(0,0,0,.75)"
+        context.fillRect(0, 0, canvas.width, canvas.height)
+        game.setGameState(GameState.Title)
     }
 
     function draw() {
-        context.clearRect(0, 0, canvas.width, canvas.height)
-        drawTiles()
-        drawPlayer()
-        drawEnemies()
+        if (
+            game.getGameState() === GameState.Running ||
+            game.getGameState() === GameState.GameOver
+        ) {
+            context.clearRect(0, 0, canvas.width, canvas.height)
+            drawTiles()
+            drawPlayer()
+            drawEnemies()
+        }
     }
 
     function drawEnemies() {
-        for (let i = 0; i < game.enemies.length; i++) {
-            const enemy = game.enemies[i]
+        for (let i = 0; i < game.getEnemies().length; i++) {
+            const enemy = game.getEnemies()[i]
             const { x, y } = enemy.getTile().getCoordinates()
 
             drawSprite(enemy.getSprite(), x, y)
@@ -38,15 +62,15 @@
     }
 
     function drawPlayer() {
-        const { x, y } = game.player.getTile().getCoordinates()
-        drawSprite(game.player.getSprite(), x, y)
-        drawHealth(game.player, x, y)
+        const { x, y } = game.getPlayer().getTile().getCoordinates()
+        drawSprite(game.getPlayer().getSprite(), x, y)
+        drawHealth(game.getPlayer(), x, y)
     }
 
     function drawTiles() {
         for (let i = 0; i < Map.numTiles; i++) {
             for (let j = 0; j < Map.numTiles; j++) {
-                const tile = game.map.getTile(i, j)
+                const tile = game.getMap().getTile(i, j)
                 const { x, y } = tile.getCoordinates()
                 drawSprite(tile.getSprite(), x, y)
             }

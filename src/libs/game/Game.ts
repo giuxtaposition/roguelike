@@ -14,15 +14,19 @@ import Map from "./Map"
 import type { Tile } from "./Tile"
 
 export default class Game {
-    level = 1
-    map: Map
-    enemies: Entity[] = []
-    player: Player
+    private level = 1
+    private startingHp = 3
+    private numLevels = 6
+    private map: Map
+    private enemies: Entity[] = []
+    private player: Player
 
-    constructor() {
-        this.generateLevel()
+    private gameState = GameState.Loading
 
-        this.player = new Player(this.map.getRandomPassableTile())
+    public start() {
+        this.level = 1
+        this.startLevel(this.startingHp)
+        this.gameState = GameState.Running
     }
 
     public movePlayer(direction: Direction) {
@@ -57,7 +61,33 @@ export default class Game {
         }
     }
 
+    public getGameState() {
+        return this.gameState
+    }
+
+    public setGameState(gameState: GameState) {
+        this.gameState = gameState
+    }
+
+    public getPlayer() {
+        return this.player
+    }
+
+    public getMap() {
+        return this.map
+    }
+
+    public getEnemies() {
+        return this.enemies
+    }
+
+    private startLevel(playerHealth: number) {
+        this.generateLevel()
+        this.player = new Player(this.map.getRandomPassableTile(), playerHealth)
+    }
+
     private tick() {
+        console.log("before for loop")
         for (let i = this.enemies.length - 1; i >= 0; i--) {
             const currentEnemy = this.enemies[i]
             if (currentEnemy.getIsAlive()) {
@@ -69,6 +99,13 @@ export default class Game {
             } else {
                 this.removeEnemy(i)
             }
+        }
+
+        console.log("tick")
+        console.log("player is dead ", !this.player.getIsAlive())
+
+        if (!this.player.getIsAlive()) {
+            this.gameState = GameState.GameOver
         }
     }
 
@@ -117,4 +154,11 @@ export enum Direction {
     DOWN,
     LEFT,
     RIGHT,
+}
+
+export enum GameState {
+    Title = "title",
+    GameOver = "gameOver",
+    Running = "running",
+    Loading = "loading",
 }

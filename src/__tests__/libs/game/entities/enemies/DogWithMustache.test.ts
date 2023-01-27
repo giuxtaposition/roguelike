@@ -19,7 +19,7 @@ describe("DogWithMustache", () => {
 
     test("doEntityBehavior should move DogWithMustache twice but attack once", () => {
         const playerTile = new Floor(1, 1, map)
-        const player = new Player(playerTile)
+        const player = new Player(playerTile, 6)
         const dogWithMustache = new DogWithMustache(new Floor(0, 0, map))
         const adjacentPassableTiles = [
             new Floor(0, 1, map),

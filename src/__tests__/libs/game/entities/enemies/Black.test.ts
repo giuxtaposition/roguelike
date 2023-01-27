@@ -20,7 +20,7 @@ describe("Black", () => {
     test("update should move Black randomly without using manhattan distance", () => {
         const tileA = new Floor(0, 1, map)
         const tileB = new Floor(1, 0, map)
-        const player = new Player(new Floor(1, 1, map))
+        const player = new Player(new Floor(1, 1, map), 6)
         const black = new Black(new Floor(0, 0, map))
 
         const getTileAtDistanceXY = vi.fn().mockReturnValueOnce(tileA)

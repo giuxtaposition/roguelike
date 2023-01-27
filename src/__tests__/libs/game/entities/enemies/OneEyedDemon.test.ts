@@ -18,7 +18,7 @@ describe("OneEyedDemon", () => {
     })
 
     test("update should stun OneEyedDemon if not already stunned", () => {
-        const player = new Player(new Floor(1, 1, map))
+        const player = new Player(new Floor(1, 1, map), 6)
         const oneEyedDemon = new OneEyedDemon(new Floor(0, 0, map))
         const adjacentPassableTiles = [new Floor(0, 1, map)]
 

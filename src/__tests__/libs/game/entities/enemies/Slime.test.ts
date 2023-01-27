@@ -18,7 +18,7 @@ describe("Black", () => {
     })
 
     test("doEntityBehavior should try to eat nearby walls and restore health", () => {
-        const player = new Player(new Floor(2, 2, map))
+        const player = new Player(new Floor(2, 2, map), 6)
         const slime = new Slime(new Floor(1, 1, map))
         const adjacentTiles = [new Floor(1, 2, map), new Wall(2, 1, map)]
 
@@ -33,7 +33,7 @@ describe("Black", () => {
     })
 
     test("doEntityBehavior should do normal entity update if there are no walls nearby", () => {
-        const player = new Player(new Floor(2, 2, map))
+        const player = new Player(new Floor(2, 2, map), 6)
         const slime = new Slime(new Floor(1, 1, map))
         const adjacentTiles = [new Floor(1, 2, map), new Floor(2, 1, map)]
 
