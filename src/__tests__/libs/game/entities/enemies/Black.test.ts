@@ -3,6 +3,7 @@ import { Black } from "../../../../../libs/game/entities/enemies"
 import { Player } from "../../../../../libs/game/entities/Player"
 import Map from "../../../../../libs/game/Map"
 import { Floor } from "../../../../../libs/game/Tile"
+import { update } from "../../../../helpers/helpers"
 
 describe("Black", () => {
     const map = new Map()
@@ -28,7 +29,7 @@ describe("Black", () => {
         const tileADistance = vi.spyOn(tileA, "distance")
         const tileBDistance = vi.spyOn(tileB, "distance")
 
-        black.update([tileA, tileB], player, getTileAtDistanceXY)
+        update(black, [tileA, tileB], player, getTileAtDistanceXY, 2)
 
         expect(tileADistance).not.toHaveBeenCalled()
         expect(tileBDistance).not.toHaveBeenCalled()

@@ -3,6 +3,7 @@ import { OneEyedDemon } from "../../../../../libs/game/entities/enemies"
 import { Player } from "../../../../../libs/game/entities/Player"
 import Map from "../../../../../libs/game/Map"
 import { Floor } from "../../../../../libs/game/Tile"
+import { update } from "../../../../helpers/helpers"
 
 describe("OneEyedDemon", () => {
     const map = new Map()
@@ -26,7 +27,13 @@ describe("OneEyedDemon", () => {
             .fn()
             .mockReturnValue(adjacentPassableTiles[0])
 
-        oneEyedDemon.update(adjacentPassableTiles, player, getTileAtDistanceXY)
+        update(
+            oneEyedDemon,
+            adjacentPassableTiles,
+            player,
+            getTileAtDistanceXY,
+            1
+        )
 
         expect(oneEyedDemon.getIsStunned()).toBeTruthy()
     })

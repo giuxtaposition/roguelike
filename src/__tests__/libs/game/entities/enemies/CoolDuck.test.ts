@@ -3,6 +3,7 @@ import Map from "../../../../../libs/game/Map"
 import { CoolDuck } from "../../../../../libs/game/entities/enemies"
 import { Player } from "../../../../../libs/game/entities/Player"
 import { vi } from "vitest"
+import { update } from "../../../../helpers/helpers"
 
 describe("CoolDuck", () => {
     const map = new Map()
@@ -18,7 +19,7 @@ describe("CoolDuck", () => {
     })
 
     test("update should follow normal entity update", () => {
-        const player = new Player(new Floor(1, 1, map))
+        const player = new Player(new Floor(1, 1, map), 3)
         const coolDuck = new CoolDuck(new Floor(0, 0, map))
         const adjacentPassableTiles = [new Floor(0, 1, map)]
 
@@ -27,7 +28,7 @@ describe("CoolDuck", () => {
             .mockReturnValue(adjacentPassableTiles[0])
         const tryToMove = vi.spyOn(coolDuck, "tryToMove")
 
-        coolDuck.update(adjacentPassableTiles, player, getTileAtDistanceXY)
+        update(coolDuck, adjacentPassableTiles, player, getTileAtDistanceXY, 2)
 
         expect(getTileAtDistanceXY).toHaveBeenCalledWith(coolDuck, 0, 1)
         expect(tryToMove).toHaveBeenCalledWith(adjacentPassableTiles[0])

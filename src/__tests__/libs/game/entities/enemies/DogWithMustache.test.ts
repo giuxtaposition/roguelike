@@ -3,6 +3,7 @@ import Map from "../../../../../libs/game/Map"
 import { DogWithMustache } from "../../../../../libs/game/entities/enemies"
 import { Player } from "../../../../../libs/game/entities/Player"
 import { vi } from "vitest"
+import { update } from "../../../../helpers/helpers"
 
 describe("DogWithMustache", () => {
     const map = new Map()
@@ -31,14 +32,18 @@ describe("DogWithMustache", () => {
             .fn()
             .mockReturnValueOnce(adjacentPassableTiles[0])
             .mockReturnValueOnce(playerTile)
+            .mockReturnValueOnce(adjacentPassableTiles[0])
+            .mockReturnValueOnce(playerTile)
         const tryToMove = vi.spyOn(dogWithMustache, "tryToMove")
 
         const playerReceiveDamage = vi.spyOn(player, "receiveDamage")
 
-        dogWithMustache.update(
+        update(
+            dogWithMustache,
             adjacentPassableTiles,
             player,
-            getTileAtDistanceXY
+            getTileAtDistanceXY,
+            2
         )
 
         expect(tryToMove).toHaveBeenCalledTimes(2)

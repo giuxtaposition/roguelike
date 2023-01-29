@@ -10,6 +10,7 @@ export abstract class Entity {
     protected isAlive: boolean = true
     protected hasAttackedThisTurn: boolean = false
     protected isStunned: boolean = false
+    protected teleportCounter: number = 2
 
     constructor(tile: Tile, sprite: number, health: number) {
         this.move(tile)
@@ -26,9 +27,14 @@ export abstract class Entity {
             distanceY: number
         ) => Tile
     ) {
+        this.teleportCounter--
+
+        if (this.teleportCounter > 0) {
+            return
+        }
+
         if (this.isStunned) {
             this.isStunned = false
-
             return
         }
 
@@ -59,6 +65,10 @@ export abstract class Entity {
         if (this.health <= 0) {
             this.die()
         }
+    }
+
+    public getTeleportCounter() {
+        return this.teleportCounter
     }
 
     public getIsStunned() {

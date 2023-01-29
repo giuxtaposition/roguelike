@@ -3,6 +3,7 @@ import { Slime } from "../../../../../libs/game/entities/enemies"
 import { Player } from "../../../../../libs/game/entities/Player"
 import Map from "../../../../../libs/game/Map"
 import { Floor, Wall } from "../../../../../libs/game/Tile"
+import { update } from "../../../../helpers/helpers"
 
 describe("Black", () => {
     const map = new Map()
@@ -22,10 +23,9 @@ describe("Black", () => {
         const slime = new Slime(new Floor(1, 1, map))
         const adjacentTiles = [new Floor(1, 2, map), new Wall(2, 1, map)]
 
-        const getTileAtDistanceXY = vi.fn()
         const tryToMove = vi.spyOn(slime, "tryToMove")
 
-        slime.update(adjacentTiles, player, getTileAtDistanceXY)
+        update(slime, adjacentTiles, player, vi.fn(), 2)
 
         expect(slime.getHealth()).toBe(1.5)
         expect(map.getTile(2, 1)).toBeInstanceOf(Floor)
@@ -37,10 +37,15 @@ describe("Black", () => {
         const slime = new Slime(new Floor(1, 1, map))
         const adjacentTiles = [new Floor(1, 2, map), new Floor(2, 1, map)]
 
-        const getTileAtDistanceXY = vi.fn().mockReturnValue(adjacentTiles[0])
         const tryToMove = vi.spyOn(slime, "tryToMove")
 
-        slime.update(adjacentTiles, player, getTileAtDistanceXY)
+        update(
+            slime,
+            adjacentTiles,
+            player,
+            vi.fn().mockReturnValue(adjacentTiles[0]),
+            2
+        )
 
         expect(tryToMove).toHaveBeenCalled()
     })

@@ -56,8 +56,12 @@
             const enemy = game.getEnemies()[i]
             const { x, y } = enemy.getTile().getCoordinates()
 
-            drawSprite(enemy.getSprite(), x, y)
-            drawHealth(enemy, x, y)
+            if (enemy.getTeleportCounter() > 0) {
+                drawSprite(10, x, y)
+            } else {
+                drawSprite(enemy.getSprite(), x, y)
+                drawHealth(enemy, x, y)
+            }
         }
     }
 

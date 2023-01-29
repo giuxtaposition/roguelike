@@ -4,6 +4,7 @@ import { Floor, Wall } from "../../../../libs/game/Tile"
 import Map from "../../../../libs/game/Map"
 import { Player } from "../../../../libs/game/entities/Player"
 import { CoolDuck, OneEyedDemon } from "../../../../libs/game/entities/enemies"
+import { update } from "../../../helpers/helpers"
 
 describe("Entities", () => {
     const map = new Map()
@@ -39,7 +40,7 @@ describe("Entities", () => {
         expect(enemy.getIsStunned()).toBeTruthy()
     })
 
-    test("update should move enemy one step closer to player", () => {
+    test("update should do nothing until entity finished teleporting", () => {
         const player = new Player(new Floor(1, 1, map), 3)
         const enemy = new OneEyedDemon(new Floor(0, 0, map))
         const adjacentPassableTiles = [
@@ -53,6 +54,24 @@ describe("Entities", () => {
         const tryToMove = vi.spyOn(enemy, "tryToMove")
 
         enemy.update(adjacentPassableTiles, player, getTileAtDistanceXY)
+
+        expect(tryToMove).not.toHaveBeenCalledWith(adjacentPassableTiles[0])
+    })
+
+    test("update should move enemy one step closer to player after teleporting in", () => {
+        const player = new Player(new Floor(1, 1, map), 3)
+        const enemy = new CoolDuck(new Floor(0, 0, map))
+        const adjacentPassableTiles = [
+            new Floor(1, 0, map),
+            new Floor(0, 1, map),
+        ]
+
+        const getTileAtDistanceXY = vi
+            .fn()
+            .mockReturnValue(adjacentPassableTiles[0])
+        const tryToMove = vi.spyOn(enemy, "tryToMove")
+
+        update(enemy, adjacentPassableTiles, player, getTileAtDistanceXY, 2)
 
         expect(getTileAtDistanceXY).toHaveBeenCalledWith(enemy, 1, 0)
         expect(tryToMove).toHaveBeenCalledWith(adjacentPassableTiles[0])
@@ -72,7 +91,7 @@ describe("Entities", () => {
         const getTileAtDistanceXY = vi.fn()
         const tryToMove = vi.spyOn(enemy, "tryToMove")
 
-        enemy.update(adjacentPassableTiles, player, getTileAtDistanceXY)
+        update(enemy, adjacentPassableTiles, player, getTileAtDistanceXY, 2)
 
         expect(getTileAtDistanceXY).not.toHaveBeenCalled()
         expect(tryToMove).not.toHaveBeenCalled()
@@ -89,12 +108,13 @@ describe("Entities", () => {
         const tile2 = new Floor(1, 0, map)
         const adjacentPassableTiles = [tile1, tile2]
 
-        const getTileAtDistanceXY = vi.fn()
+        const getTileAtDistanceXY = vi
+            .fn()
+            .mockReturnValue(adjacentPassableTiles[0])
         const tryToMove = vi.spyOn(enemy, "tryToMove")
 
-        enemy.update(adjacentPassableTiles, player, getTileAtDistanceXY)
+        update(enemy, adjacentPassableTiles, player, getTileAtDistanceXY, 2)
 
-        expect(getTileAtDistanceXY).not.toHaveBeenCalled()
         expect(tryToMove).not.toHaveBeenCalled()
     })
 
