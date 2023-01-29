@@ -137,5 +137,15 @@ describe("Game", () => {
 
             expect(game.getGameState()).toEqual(GameState.GameOver)
         })
+
+        test("spawn another enemy after 15 turns", () => {
+            game.getPlayer().tryToMove = vi.fn().mockReturnValue(true)
+
+            for (let index = 0; index <= 15; index++) {
+                game.movePlayer(Direction.RIGHT)
+            }
+
+            expect(game.getEnemies().length).toBe(3)
+        })
     })
 })

@@ -20,7 +20,8 @@ export default class Game {
     private map: Map
     private enemies: Entity[] = []
     private player: Player
-
+    private spawnRate: number
+    private spawnCounter: number
     private gameState = GameState.Loading
 
     public start() {
@@ -82,12 +83,14 @@ export default class Game {
     }
 
     private startLevel(playerHealth: number) {
+        this.enemies = []
+        this.spawnRate = 15
+        this.spawnCounter = this.spawnRate
         this.generateLevel()
         this.player = new Player(this.map.getRandomPassableTile(), playerHealth)
     }
 
     private tick() {
-        console.log("before for loop")
         for (let i = this.enemies.length - 1; i >= 0; i--) {
             const currentEnemy = this.enemies[i]
             if (currentEnemy.getIsAlive()) {
@@ -101,11 +104,15 @@ export default class Game {
             }
         }
 
-        console.log("tick")
-        console.log("player is dead ", !this.player.getIsAlive())
-
         if (!this.player.getIsAlive()) {
             this.gameState = GameState.GameOver
+        }
+
+        this.spawnCounter--
+        if (this.spawnCounter <= 0) {
+            this.spawnEnemies()
+            this.spawnCounter = this.spawnRate
+            this.spawnRate--
         }
     }
 
