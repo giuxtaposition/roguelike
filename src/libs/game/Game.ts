@@ -11,12 +11,13 @@ import type { Entity } from "./entities/Entity"
 import { Player } from "./entities/Player"
 
 import Map from "./Map"
+import { Exit } from "./Tile"
 
 export default class Game {
-    private level = 1
     private startingHealth = 3
     private maxHealth = 10
     private maxLevel = 6
+    private level: number
     private map: Map
     private enemies: Entity[] = []
     private player: Player
@@ -34,24 +35,16 @@ export default class Game {
         let moved = false
         switch (direction) {
             case Direction.UP:
-                moved = this.player.tryToMove(
-                    this.map.getTileAtDistanceXY(this.player.getTile(), 0, -1)
-                )
+                moved = this.tryToMovePlayer(0, -1)
                 break
             case Direction.DOWN:
-                moved = this.player.tryToMove(
-                    this.map.getTileAtDistanceXY(this.player.getTile(), 0, 1)
-                )
+                moved = this.tryToMovePlayer(0, 1)
                 break
             case Direction.LEFT:
-                moved = this.player.tryToMove(
-                    this.map.getTileAtDistanceXY(this.player.getTile(), -1, 0)
-                )
+                moved = this.tryToMovePlayer(-1, 0)
                 break
             case Direction.RIGHT:
-                moved = this.player.tryToMove(
-                    this.map.getTileAtDistanceXY(this.player.getTile(), 1, 0)
-                )
+                moved = this.tryToMovePlayer(1, 0)
                 break
             default:
                 break
@@ -87,7 +80,7 @@ export default class Game {
     }
 
     public getLevel() {
-        return this.getLevel()
+        return this.level
     }
 
     public updateLevel() {
@@ -104,6 +97,19 @@ export default class Game {
         this.spawnCounter = this.spawnRate
         this.generateLevel()
         this.player = new Player(this.map.getRandomPassableTile(), playerHealth)
+        this.map.getRandomPassableTile().replace(Exit)
+    }
+
+    private playerSteppedOnExitTile() {
+        if (this.level == this.maxLevel) {
+            this.setGameState(GameState.GameOver)
+        } else {
+            this.level += 1
+
+            this.startLevel(
+                Math.min(this.maxHealth, this.player.getHealth() + 1)
+            )
+        }
     }
 
     private tick() {
@@ -130,6 +136,20 @@ export default class Game {
             this.spawnCounter = this.spawnRate
             this.spawnRate--
         }
+    }
+
+    private tryToMovePlayer(distanceX: number, distanceY: number): boolean {
+        const destinationTile = this.map.getTileAtDistanceXY(
+            this.player.getTile(),
+            distanceX,
+            distanceY
+        )
+
+        if (destinationTile instanceof Exit && !destinationTile.getEntity()) {
+            this.playerSteppedOnExitTile()
+        }
+
+        return this.player.tryToMove(destinationTile)
     }
 
     private removeEnemy(index: number) {

@@ -1,5 +1,5 @@
 import Game, { Direction, GameState } from "../../../libs/game/Game"
-import { Floor, Wall } from "../../../libs/game/Tile"
+import { Exit, Floor, Wall } from "../../../libs/game/Tile"
 import { vi } from "vitest"
 import { CoolDuck, DogWithMustache } from "../../../libs/game/entities/enemies"
 
@@ -146,6 +146,28 @@ describe("Game", () => {
             }
 
             expect(game.getEnemies().length).toBe(3)
+        })
+
+        test("if player steps on Exit start next level", () => {
+            game.getMap().getTileAtDistanceXY = vi
+                .fn()
+                .mockReturnValue(new Exit(1, 1, game.getMap()))
+
+            game.movePlayer(Direction.DOWN)
+
+            expect(game.getLevel()).toBe(2)
+            expect(game.getPlayer().getHealth()).toBe(4)
+        })
+
+        test("if player steps on Exit and it is the last level, game over", () => {
+            for (let index = 1; index <= game.getMaxLevel(); index++) {
+                game.getMap().getTileAtDistanceXY = vi
+                    .fn()
+                    .mockReturnValue(new Exit(index, index, game.getMap()))
+                game.movePlayer(Direction.DOWN)
+            }
+
+            expect(game.getGameState()).toEqual(GameState.GameOver)
         })
     })
 })

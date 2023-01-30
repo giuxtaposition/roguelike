@@ -1,4 +1,6 @@
 import type { Entity } from "./entities/Entity"
+import type Game from "./Game"
+import { GameState } from "./Game"
 import type Map from "./Map"
 
 export abstract class Tile {
@@ -66,5 +68,11 @@ export class Floor extends Tile {
 export class Wall extends Tile {
     constructor(x: number, y: number, map: Map) {
         super(x, y, 3, false, map)
+    }
+}
+
+export class Exit extends Tile {
+    constructor(x: number, y: number, map: Map) {
+        super(x, y, 11, true, map)
     }
 }
