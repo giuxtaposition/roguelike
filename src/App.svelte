@@ -8,7 +8,7 @@
 
 <style lang="sass">
     :global(body)
-        background-color: #cba6f7
+        background-color: #383552
         text-align: center
         margin: 0
         padding: 0

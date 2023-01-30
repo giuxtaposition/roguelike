@@ -37,6 +37,9 @@
         context.fillStyle = "rgba(0,0,0,.75)"
         context.fillRect(0, 0, canvas.width, canvas.height)
         game.setGameState(GameState.Title)
+
+        drawText("a simple", 40, true, canvas.height / 2 - 100, "white")
+        drawText("ROGUELIKE", 70, true, canvas.height / 2 - 30, "white")
     }
 
     function draw() {
@@ -48,6 +51,7 @@
             drawTiles()
             drawPlayer()
             drawEnemies()
+            drawText("Level: " + game.getLevel(), 30, false, 40, "#bd516d")
         }
     }
 
@@ -107,6 +111,28 @@
         }
     }
 
+    function drawText(
+        text: string,
+        size: number,
+        centered: boolean,
+        textY: number,
+        color: string
+    ) {
+        context.fillStyle = color
+
+        context.font = size + "px monospace"
+
+        let textX
+
+        if (centered) {
+            textX = (canvas.width - context.measureText(text).width) / 2
+        } else {
+            textX = Map.tileSize * Map.numTiles + 25
+        }
+
+        context.fillText(text, textX, textY)
+    }
+
     onMount(() => {
         context = canvas.getContext("2d")
         canvas.width = Map.tileSize * (Map.numTiles + Map.uiWidth)
@@ -124,5 +150,4 @@
 <style lang="sass">
 canvas
     margin: 1rem
-    outline: 1px solid white
 </style>
