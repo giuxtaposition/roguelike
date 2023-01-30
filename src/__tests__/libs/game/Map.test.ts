@@ -91,6 +91,13 @@ describe("Map", () => {
         expect(map.getRandomPassableTile()).toBeInstanceOf(Floor)
     })
 
+    test("getTileAtDistanceXY should return the tile at expected distance from current tile", () => {
+        const map = new Map()
+        const currentTile = map.getTile(1, 1)
+        const expectedTile = map.getTile(3, 3)
+        expect(map.getTileAtDistanceXY(currentTile, 2, 2)).toEqual(expectedTile)
+    })
+
     test("inBounds should return false if coordinates are outside of map", () => {
         expect(Map.inBounds(-1, 9)).toBeFalsy()
     })

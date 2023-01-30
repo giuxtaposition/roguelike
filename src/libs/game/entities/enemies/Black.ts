@@ -11,7 +11,7 @@ export class Black extends Entity {
         adjacentTiles: Tile[],
         _: Player,
         getTileAtDistanceXY: (
-            entity: Entity,
+            tile: Tile,
             distanceX: number,
             distanceY: number
         ) => Tile
@@ -30,7 +30,7 @@ export class Black extends Entity {
 
             this.tryToMove(
                 getTileAtDistanceXY(
-                    this,
+                    this.getTile(),
                     neighborX - currentTileX,
                     neighborY - currentTileY
                 )

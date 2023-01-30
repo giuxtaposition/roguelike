@@ -11,7 +11,7 @@ export class OneEyedDemon extends Entity {
         adjacentPassableTiles: Tile[],
         player: Player,
         getTileAtDistanceXY: (
-            entity: Entity,
+            tile: Tile,
             distanceX: number,
             distanceY: number
         ) => Tile

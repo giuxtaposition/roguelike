@@ -1,4 +1,5 @@
 import { randomRange, shuffle, tryTo } from "../utils/utils"
+import type { Entity } from "./entities/Entity"
 import { Floor, Wall, type Tile } from "./Tile"
 
 export default class Map {
@@ -15,6 +16,15 @@ export default class Map {
                 this.getConnectedTiles(this.getRandomPassableTile()).length
             )
         })
+    }
+
+    public getTileAtDistanceXY(
+        tile: Tile,
+        distanceX: number,
+        distanceY: number
+    ): Tile {
+        const { x, y } = tile.getCoordinates()
+        return this.getTile(x + distanceX, y + distanceY)
     }
 
     public getAdjacentPassableTiles(tile: Tile): Tile[] {

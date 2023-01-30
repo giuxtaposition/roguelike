@@ -19,9 +19,10 @@ describe("CoolDuck", () => {
     })
 
     test("update should follow normal entity update", () => {
-        const player = new Player(new Floor(1, 1, map), 3)
-        const coolDuck = new CoolDuck(new Floor(0, 0, map))
-        const adjacentPassableTiles = [new Floor(0, 1, map)]
+        const player = new Player(new Floor(2, 2, map), 3)
+        const coolDuckTile = new Floor(1, 1, map)
+        const coolDuck = new CoolDuck(coolDuckTile)
+        const adjacentPassableTiles = [new Floor(1, 2, map)]
 
         const getTileAtDistanceXY = vi
             .fn()
@@ -30,7 +31,7 @@ describe("CoolDuck", () => {
 
         update(coolDuck, adjacentPassableTiles, player, getTileAtDistanceXY, 2)
 
-        expect(getTileAtDistanceXY).toHaveBeenCalledWith(coolDuck, 0, 1)
+        expect(getTileAtDistanceXY).toHaveBeenCalledWith(coolDuckTile, 0, 1)
         expect(tryToMove).toHaveBeenCalledWith(adjacentPassableTiles[0])
     })
 })

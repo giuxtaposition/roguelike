@@ -11,7 +11,7 @@ export class DogWithMustache extends Entity {
         adjacentTiles: Tile[],
         player: Player,
         getTileAtDistanceXY: (
-            entity: Entity,
+            tile: Tile,
             distanceX: number,
             distanceY: number
         ) => Tile

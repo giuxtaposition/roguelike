@@ -11,12 +11,12 @@ import type { Entity } from "./entities/Entity"
 import { Player } from "./entities/Player"
 
 import Map from "./Map"
-import type { Tile } from "./Tile"
 
 export default class Game {
     private level = 1
-    private startingHp = 3
-    private numLevels = 6
+    private startingHealth = 3
+    private maxHealth = 10
+    private maxLevel = 6
     private map: Map
     private enemies: Entity[] = []
     private player: Player
@@ -26,7 +26,7 @@ export default class Game {
 
     public start() {
         this.level = 1
-        this.startLevel(this.startingHp)
+        this.startLevel(this.startingHealth)
         this.gameState = GameState.Running
     }
 
@@ -35,22 +35,22 @@ export default class Game {
         switch (direction) {
             case Direction.UP:
                 moved = this.player.tryToMove(
-                    this.getTileAtDistanceXY(this.player, 0, -1)
+                    this.map.getTileAtDistanceXY(this.player.getTile(), 0, -1)
                 )
                 break
             case Direction.DOWN:
                 moved = this.player.tryToMove(
-                    this.getTileAtDistanceXY(this.player, 0, 1)
+                    this.map.getTileAtDistanceXY(this.player.getTile(), 0, 1)
                 )
                 break
             case Direction.LEFT:
                 moved = this.player.tryToMove(
-                    this.getTileAtDistanceXY(this.player, -1, 0)
+                    this.map.getTileAtDistanceXY(this.player.getTile(), -1, 0)
                 )
                 break
             case Direction.RIGHT:
                 moved = this.player.tryToMove(
-                    this.getTileAtDistanceXY(this.player, 1, 0)
+                    this.map.getTileAtDistanceXY(this.player.getTile(), 1, 0)
                 )
                 break
             default:
@@ -82,7 +82,23 @@ export default class Game {
         return this.enemies
     }
 
-    private startLevel(playerHealth: number) {
+    public getMaxHealth() {
+        return this.maxHealth
+    }
+
+    public getLevel() {
+        return this.getLevel()
+    }
+
+    public updateLevel() {
+        this.level += 1
+    }
+
+    public getMaxLevel() {
+        return this.maxLevel
+    }
+
+    public startLevel(playerHealth: number) {
         this.enemies = []
         this.spawnRate = 15
         this.spawnCounter = this.spawnRate
@@ -97,7 +113,7 @@ export default class Game {
                 currentEnemy.update(
                     this.map.getAdjacentTiles(currentEnemy.getTile()),
                     this.player,
-                    this.getTileAtDistanceXY.bind(this)
+                    this.map.getTileAtDistanceXY.bind(this.map)
                 )
             } else {
                 this.removeEnemy(i)
@@ -118,15 +134,6 @@ export default class Game {
 
     private removeEnemy(index: number) {
         this.enemies.splice(index, 1)
-    }
-
-    private getTileAtDistanceXY(
-        entity: Entity,
-        distanceX: number,
-        distanceY: number
-    ): Tile {
-        const { x, y } = entity.getTile().getCoordinates()
-        return this.map.getTile(x + distanceX, y + distanceY)
     }
 
     private generateLevel() {

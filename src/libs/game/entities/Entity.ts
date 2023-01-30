@@ -22,7 +22,7 @@ export abstract class Entity {
         adjacentTiles: Tile[],
         player: Player,
         getTileAtDistanceXY: (
-            entity: Entity,
+            tile: Tile,
             distanceX: number,
             distanceY: number
         ) => Tile
@@ -108,7 +108,7 @@ export abstract class Entity {
         adjacentTiles: Tile[],
         player: Player,
         getTileAtDistanceXY: (
-            entity: Entity,
+            tile: Tile,
             distanceX: number,
             distanceY: number
         ) => Tile
@@ -131,7 +131,7 @@ export abstract class Entity {
 
             this.tryToMove(
                 getTileAtDistanceXY(
-                    this,
+                    this.getTile(),
                     newTileX - currentTileX,
                     newTileY - currentTileY
                 )

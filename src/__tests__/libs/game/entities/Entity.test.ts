@@ -59,11 +59,12 @@ describe("Entities", () => {
     })
 
     test("update should move enemy one step closer to player after teleporting in", () => {
-        const player = new Player(new Floor(1, 1, map), 3)
-        const enemy = new CoolDuck(new Floor(0, 0, map))
+        const player = new Player(new Floor(2, 2, map), 3)
+        const enemyTile = new Floor(1, 1, map)
+        const enemy = new CoolDuck(enemyTile)
         const adjacentPassableTiles = [
-            new Floor(1, 0, map),
-            new Floor(0, 1, map),
+            new Floor(2, 1, map),
+            new Floor(1, 2, map),
         ]
 
         const getTileAtDistanceXY = vi
@@ -73,7 +74,7 @@ describe("Entities", () => {
 
         update(enemy, adjacentPassableTiles, player, getTileAtDistanceXY, 2)
 
-        expect(getTileAtDistanceXY).toHaveBeenCalledWith(enemy, 1, 0)
+        expect(getTileAtDistanceXY).toHaveBeenCalledWith(enemyTile, 1, 0)
         expect(tryToMove).toHaveBeenCalledWith(adjacentPassableTiles[0])
     })
 
