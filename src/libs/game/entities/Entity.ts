@@ -1,3 +1,4 @@
+import { playSound } from "../../stores/sounds"
 import type { Tile } from "../Tile"
 import type { Player } from "./Player"
 
@@ -78,6 +79,12 @@ export abstract class Entity {
 
         if (this.health <= 0) {
             this.die()
+        }
+
+        if (this.isPlayer) {
+            playSound("hit1")
+        } else {
+            playSound("hit2")
         }
     }
 

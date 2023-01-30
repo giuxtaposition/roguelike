@@ -2,7 +2,7 @@ import Game, { Direction, GameState } from "../../../libs/game/Game"
 import { Exit, Floor, Wall } from "../../../libs/game/Tile"
 import { vi } from "vitest"
 import { CoolDuck } from "../../../libs/game/entities/enemies"
-import { scores } from "../../../libs/stores/store"
+import { scores } from "../../../libs/stores/scores"
 
 describe("Game", () => {
     let game: Game

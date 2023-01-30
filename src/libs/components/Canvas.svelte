@@ -3,7 +3,7 @@
     import type { Entity } from "../game/entities/Entity"
     import Map from "../game/Map"
     import Game, { Direction, GameState } from "../game/Game"
-    import { scores, type ScoreObject } from "../stores/store"
+    import { scores, type ScoreObject } from "../stores/scores"
 
     let canvas: HTMLCanvasElement
     let context: CanvasRenderingContext2D

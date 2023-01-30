@@ -1,4 +1,5 @@
-import type { ScoreObject, scoreStore } from "../stores/store"
+import type { ScoreObject, scoreStore } from "../stores/scores"
+import { playSound } from "../stores/sounds"
 import { shuffle } from "../utils/utils"
 import {
     type Enemy,
@@ -183,6 +184,7 @@ export default class Game {
     }
 
     private playerSteppedOnExitTile() {
+        playSound("newLevel")
         if (this.level == this.maxLevel) {
             this.addScore(true)
             this.setGameState(GameState.GameOver)
@@ -196,6 +198,7 @@ export default class Game {
     }
 
     private playerSteppedOnTreasure(tile: Tile) {
+        playSound("treasure")
         this.score += 1
         tile.setTreasure(false)
         this.spawnEnemies()
