@@ -61,7 +61,7 @@
     function drawEnemies() {
         for (let i = 0; i < game.getEnemies().length; i++) {
             const enemy = game.getEnemies()[i]
-            const { x, y } = enemy.getTile().getCoordinates()
+            const { x, y } = enemy.getDisplayCoordinates()
 
             if (enemy.getTeleportCounter() > 0) {
                 drawSprite(10, x, y)
@@ -69,13 +69,17 @@
                 drawSprite(enemy.getSprite(), x, y)
                 drawHealth(enemy, x, y)
             }
+
+            enemy.smoothMoveAnimation()
         }
     }
 
     function drawPlayer() {
-        const { x, y } = game.getPlayer().getTile().getCoordinates()
-        drawSprite(game.getPlayer().getSprite(), x, y)
-        drawHealth(game.getPlayer(), x, y)
+        const player = game.getPlayer()
+        const { x, y } = player.getDisplayCoordinates()
+        drawSprite(player.getSprite(), x, y)
+        drawHealth(player, x, y)
+        player.smoothMoveAnimation()
     }
 
     function drawTiles() {
@@ -109,9 +113,7 @@
         for (let i = 0; i < entity.getHealth(); i++) {
             drawSprite(
                 9,
-
                 x + (i % 3) * (4 / 16),
-
                 y - Math.floor(i / 3) * (5 / 16)
             )
         }

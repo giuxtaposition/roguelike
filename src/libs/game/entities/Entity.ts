@@ -11,6 +11,8 @@ export abstract class Entity {
     protected hasAttackedThisTurn: boolean = false
     protected isStunned: boolean = false
     protected teleportCounter: number = 2
+    protected offsetX = 0
+    protected offsetY = 0
 
     constructor(tile: Tile, sprite: number, health: number) {
         this.move(tile)
@@ -52,6 +54,18 @@ export abstract class Entity {
                     this.hasAttackedThisTurn = true
                     destinationTile.getEntity().isStunned = true
                     destinationTile.getEntity().receiveDamage(1)
+
+                    const { x: currentTileX, y: currentTileY } =
+                        this.tile.getCoordinates()
+                    const { x: newTileX, y: newTileY } =
+                        destinationTile.getCoordinates()
+
+                    this.bumpAnimation(
+                        newTileX,
+                        currentTileX,
+                        newTileY,
+                        currentTileY
+                    )
                 }
             }
 
@@ -95,13 +109,46 @@ export abstract class Entity {
         return this.sprite
     }
 
-    protected move(tile: Tile) {
+    public smoothMoveAnimation() {
+        this.offsetX -= Math.sign(this.offsetX) * (1 / 8)
+        this.offsetY -= Math.sign(this.offsetY) * (1 / 8)
+    }
+
+    public getOffsetX() {
+        return this.offsetX
+    }
+
+    public getOffsetY() {
+        return this.offsetY
+    }
+
+    public getDisplayCoordinates() {
+        const { x, y } = this.tile.getCoordinates()
+        return { x: x + this.offsetX, y: y + this.offsetY }
+    }
+
+    protected bumpAnimation(
+        newTileX: number,
+        currentTileX: number,
+        newTileY: number,
+        currentTileY: number
+    ) {
+        this.offsetX = (newTileX - currentTileX) / 2
+        this.offsetY = (newTileY - currentTileY) / 2
+    }
+
+    protected move(newTile: Tile) {
         if (this.tile) {
             this.tile.setEntity(null)
-        }
+            const { x: currentTileX, y: currentTileY } =
+                this.tile.getCoordinates()
+            const { x: newTileX, y: newTileY } = newTile.getCoordinates()
 
-        this.tile = tile
-        tile.setEntity(this)
+            this.offsetX = currentTileX - newTileX
+            this.offsetY = currentTileY - newTileY
+        }
+        this.tile = newTile
+        newTile.setEntity(this)
     }
 
     protected doEntityBehavior(
