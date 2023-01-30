@@ -1,6 +1,4 @@
 import type { Entity } from "./entities/Entity"
-import type Game from "./Game"
-import { GameState } from "./Game"
 import type Map from "./Map"
 
 export abstract class Tile {
@@ -10,6 +8,7 @@ export abstract class Tile {
     private isPassable: boolean
     private entity?: Entity
     private map: Map
+    private treasure: boolean = false
 
     constructor(
         x: number,
@@ -36,6 +35,14 @@ export abstract class Tile {
             this.y,
             this.map
         )
+    }
+
+    public getTreasure() {
+        return this.treasure
+    }
+
+    public setTreasure(treasure: boolean) {
+        this.treasure = treasure
     }
 
     public getEntity() {

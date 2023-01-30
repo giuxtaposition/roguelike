@@ -4,7 +4,7 @@ import { Floor, Wall, type Tile } from "./Tile"
 
 export default class Map {
     static readonly tileSize = 64
-    static readonly numTiles = 9
+    static readonly numTiles = 12
     static readonly uiWidth = 4
 
     private tiles: Tile[][] = []

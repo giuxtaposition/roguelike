@@ -52,6 +52,7 @@
             drawPlayer()
             drawEnemies()
             drawText("Level: " + game.getLevel(), 30, false, 40, "#bd516d")
+            drawText("Score: " + game.getScore(), 30, false, 70, "#bd516d")
         }
     }
 
@@ -81,6 +82,9 @@
                 const tile = game.getMap().getTile(i, j)
                 const { x, y } = tile.getCoordinates()
                 drawSprite(tile.getSprite(), x, y)
+                if (tile.getTreasure()) {
+                    drawSprite(12, x, y)
+                }
             }
         }
     }

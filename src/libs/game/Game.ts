@@ -11,19 +11,20 @@ import type { Entity } from "./entities/Entity"
 import { Player } from "./entities/Player"
 
 import Map from "./Map"
-import { Exit } from "./Tile"
+import { Exit, Tile } from "./Tile"
 
 export default class Game {
     private startingHealth = 3
     private maxHealth = 10
     private maxLevel = 6
+    private gameState = GameState.Loading
+    private score = 0
+    private enemies: Entity[] = []
     private level: number
     private map: Map
-    private enemies: Entity[] = []
     private player: Player
     private spawnRate: number
     private spawnCounter: number
-    private gameState = GameState.Loading
 
     public start() {
         this.level = 1
@@ -53,6 +54,10 @@ export default class Game {
         if (moved) {
             this.tick()
         }
+    }
+
+    public getScore() {
+        return this.score
     }
 
     public getGameState() {
@@ -100,18 +105,6 @@ export default class Game {
         this.map.getRandomPassableTile().replace(Exit)
     }
 
-    private playerSteppedOnExitTile() {
-        if (this.level == this.maxLevel) {
-            this.setGameState(GameState.GameOver)
-        } else {
-            this.level += 1
-
-            this.startLevel(
-                Math.min(this.maxHealth, this.player.getHealth() + 1)
-            )
-        }
-    }
-
     private tick() {
         for (let i = this.enemies.length - 1; i >= 0; i--) {
             const currentEnemy = this.enemies[i]
@@ -149,7 +142,29 @@ export default class Game {
             this.playerSteppedOnExitTile()
         }
 
+        if (destinationTile.getTreasure()) {
+            this.playerSteppedOnTreasure(destinationTile)
+        }
+
         return this.player.tryToMove(destinationTile)
+    }
+
+    private playerSteppedOnExitTile() {
+        if (this.level == this.maxLevel) {
+            this.setGameState(GameState.GameOver)
+        } else {
+            this.level += 1
+
+            this.startLevel(
+                Math.min(this.maxHealth, this.player.getHealth() + 1)
+            )
+        }
+    }
+
+    private playerSteppedOnTreasure(tile: Tile) {
+        this.score += 1
+        tile.setTreasure(false)
+        this.spawnEnemies()
     }
 
     private removeEnemy(index: number) {
@@ -160,6 +175,14 @@ export default class Game {
         this.map = new Map()
 
         this.generateEnemies()
+
+        this.generateTreasures()
+    }
+
+    private generateTreasures() {
+        for (let i = 0; i < 3; i++) {
+            this.map.getRandomPassableTile().setTreasure(true)
+        }
     }
 
     private generateEnemies() {

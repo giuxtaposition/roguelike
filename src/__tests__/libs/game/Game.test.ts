@@ -19,10 +19,17 @@ describe("Game", () => {
             game.start()
         })
 
-        test("after start should have game state running and generate map with enemies", () => {
+        test("after start should have game state running and generate map with enemies and treasures", () => {
             expect(game.getMap()).toBeDefined()
             expect(game.getEnemies().length).toBeGreaterThan(0)
             expect(game.getGameState()).toEqual(GameState.Running)
+            expect(
+                game
+                    .getMap()
+                    .getTiles()
+                    .flatMap(row => row.filter(tile => tile.getTreasure()))
+                    .length
+            ).toBe(3)
         })
 
         test.each`
@@ -157,6 +164,7 @@ describe("Game", () => {
 
             expect(game.getLevel()).toBe(2)
             expect(game.getPlayer().getHealth()).toBe(4)
+            expect(game.getEnemies().length).toBe(3)
         })
 
         test("if player steps on Exit and it is the last level, game over", () => {
@@ -168,6 +176,19 @@ describe("Game", () => {
             }
 
             expect(game.getGameState()).toEqual(GameState.GameOver)
+        })
+
+        test("if player steps on treasure add 1 to score and spawn new enemy", () => {
+            const treasureTile = new Floor(1, 1, game.getMap())
+            treasureTile.setTreasure(true)
+            game.getMap().getTileAtDistanceXY = vi
+                .fn()
+                .mockReturnValue(treasureTile)
+
+            game.movePlayer(Direction.DOWN)
+
+            expect(game.getScore()).toBe(1)
+            expect(game.getEnemies().length).toBe(3)
         })
     })
 })
