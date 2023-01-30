@@ -3,6 +3,7 @@
     import type { Entity } from "../game/entities/Entity"
     import Map from "../game/Map"
     import Game, { Direction, GameState } from "../game/Game"
+    import { scores, type ScoreObject } from "../stores/store"
 
     let canvas: HTMLCanvasElement
     let context: CanvasRenderingContext2D
@@ -10,7 +11,7 @@
     const spritesheet = new Image()
     spritesheet.src = "spritesheet.png"
     spritesheet.onload = showTitle
-    const game = new Game()
+    const game = new Game(scores)
 
     $: setInterval(draw, 15)
 
@@ -38,8 +39,9 @@
         context.fillRect(0, 0, canvas.width, canvas.height)
         game.setGameState(GameState.Title)
 
-        drawText("a simple", 40, true, canvas.height / 2 - 100, "white")
-        drawText("ROGUELIKE", 70, true, canvas.height / 2 - 30, "white")
+        drawText("a simple", 40, true, canvas.height / 2 - 110, "white")
+        drawText("ROGUELIKE", 70, true, canvas.height / 2 - 50, "white")
+        drawScores()
     }
 
     function draw() {
@@ -113,6 +115,56 @@
                 y - Math.floor(i / 3) * (5 / 16)
             )
         }
+    }
+
+    function drawScores() {
+        let scoresObj: ScoreObject[] = $scores
+
+        if (scoresObj.length) {
+            drawText(
+                padding(["RUN", "SCORE", "TOTAL"]),
+                18,
+                true,
+                canvas.height / 2,
+                "white"
+            )
+
+            let newestScore = scoresObj.pop()
+
+            scoresObj.sort((a, b) => b.totalScore - a.totalScore)
+
+            scoresObj.unshift(newestScore)
+
+            for (let i = 0; i < Math.min(10, scoresObj.length); i++) {
+                let scoreText = padding([
+                    scoresObj[i].run.toString(),
+                    scoresObj[i].score.toString(),
+                    scoresObj[i].totalScore.toString(),
+                ])
+
+                drawText(
+                    scoreText,
+                    18,
+                    true,
+                    canvas.height / 2 + 24 + i * 24,
+                    i === 0 ? "#81c0c6" : "#e5858c"
+                )
+            }
+        }
+    }
+
+    function padding(textArray: string[]) {
+        let finalText = ""
+
+        textArray.forEach(text => {
+            text += ""
+            for (let i = text.length; i < 10; i++) {
+                text += " "
+            }
+            finalText += text
+        })
+
+        return finalText
     }
 
     function drawText(

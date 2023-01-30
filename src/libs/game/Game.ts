@@ -1,3 +1,4 @@
+import type { ScoreObject, scoreStore } from "../stores/store"
 import { shuffle } from "../utils/utils"
 import {
     type Enemy,
@@ -25,6 +26,11 @@ export default class Game {
     private player: Player
     private spawnRate: number
     private spawnCounter: number
+    private scoreStore: scoreStore
+
+    constructor(scoreStore: scoreStore) {
+        this.scoreStore = scoreStore
+    }
 
     public start() {
         this.level = 1
@@ -105,6 +111,32 @@ export default class Game {
         this.map.getRandomPassableTile().replace(Exit)
     }
 
+    private addScore(won: boolean) {
+        let scores = this.scoreStore.get()
+        let scoreObject: ScoreObject = {
+            score: this.score,
+            run: 1,
+            totalScore: this.score,
+            active: won,
+        }
+
+        let lastScore = scores.pop()
+
+        if (lastScore) {
+            if (lastScore.active) {
+                scoreObject.run = lastScore.run + 1
+
+                scoreObject.totalScore += lastScore.totalScore
+            } else {
+                scores.push(lastScore)
+            }
+        }
+
+        scores.push(scoreObject)
+
+        this.scoreStore.set(scores)
+    }
+
     private tick() {
         for (let i = this.enemies.length - 1; i >= 0; i--) {
             const currentEnemy = this.enemies[i]
@@ -120,6 +152,7 @@ export default class Game {
         }
 
         if (!this.player.getIsAlive()) {
+            this.addScore(false)
             this.gameState = GameState.GameOver
         }
 
@@ -151,6 +184,7 @@ export default class Game {
 
     private playerSteppedOnExitTile() {
         if (this.level == this.maxLevel) {
+            this.addScore(true)
             this.setGameState(GameState.GameOver)
         } else {
             this.level += 1

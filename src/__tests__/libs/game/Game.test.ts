@@ -1,13 +1,14 @@
 import Game, { Direction, GameState } from "../../../libs/game/Game"
 import { Exit, Floor, Wall } from "../../../libs/game/Tile"
 import { vi } from "vitest"
-import { CoolDuck, DogWithMustache } from "../../../libs/game/entities/enemies"
+import { CoolDuck } from "../../../libs/game/entities/enemies"
+import { scores } from "../../../libs/stores/store"
 
 describe("Game", () => {
     let game: Game
 
     beforeEach(() => {
-        game = new Game()
+        game = new Game(scores)
     })
 
     test("new Game should have loading game state", () => {
