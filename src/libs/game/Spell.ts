@@ -3,6 +3,7 @@ import type Game from "./Game"
 export enum SpellName {
     HEALING_AURA = "Healing Aura",
     TELEPORT = "Teleport",
+    FIRE = "Fire",
 }
 
 export abstract class Spell {
@@ -16,12 +17,14 @@ export abstract class Spell {
 }
 
 export class SpellFactory {
-    public static newSpell(spellName: SpellName) {
+    public static newSpell(spellName: SpellName): Spell {
         switch (spellName) {
             case SpellName.HEALING_AURA:
                 return new HealingAura()
             case SpellName.TELEPORT:
                 return new Teleport()
+            case SpellName.FIRE:
+                return new Fire()
             default:
                 break
         }
@@ -49,5 +52,18 @@ export class Teleport extends Spell {
 
     public castSpell(game: Game) {
         game.tryToMovePlayer(game.map.getRandomPassableTile())
+    }
+}
+
+export class Fire extends Spell {
+    protected _spellName = SpellName.FIRE
+
+    public castSpell(game: Game) {
+        game.map.getAdjacentTiles(game.player.tile).forEach(tile => {
+            tile.effect = 14
+            if (tile.entity) {
+                tile.entity.receiveDamage(1)
+            }
+        })
     }
 }

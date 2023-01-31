@@ -133,6 +133,10 @@ export abstract class Entity {
         return this._health
     }
 
+    public set health(health: number) {
+        this._health = health
+    }
+
     public get sprite() {
         return this._sprite
     }

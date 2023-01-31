@@ -34,6 +34,7 @@ export default class Game {
     }
 
     public start() {
+        this._score = 0
         this._level = 1
         this.startLevel(this._startingHealth)
         this._gameState = GameState.Running
@@ -161,7 +162,6 @@ export default class Game {
         }
 
         scores.push(scoreObject)
-
         this._scoreStore.set(scores)
     }
 

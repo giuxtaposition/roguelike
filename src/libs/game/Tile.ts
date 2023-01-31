@@ -45,7 +45,7 @@ export abstract class Tile {
 
     public set effect(effectSprite: number) {
         this._effect = effectSprite
-        this._effectCounter = 30
+        this._effectCounter = 35
     }
 
     public get effectCounter() {

@@ -38,7 +38,7 @@ export default class Map {
             let x = randomRange(0, Map.numTiles - 1)
             let y = randomRange(0, Map.numTiles - 1)
             tile = this.getTile(x, y)
-            return tile.isPassable
+            return tile.isPassable && !tile.entity
         })
 
         return tile
