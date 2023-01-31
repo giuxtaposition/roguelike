@@ -6,12 +6,10 @@ describe("Map", () => {
     test("On new map, should generate map with all floor tiles connected", () => {
         const map = new Map()
 
-        let wallTiles = map
-            .getTiles()
+        let wallTiles = map.tiles
             .filter(row => row.filter(tile => tile instanceof Wall))
             .flat()
-        let floorTiles = map
-            .getTiles()
+        let floorTiles = map.tiles
             .filter(row => row.filter(tile => tile instanceof Floor))
             .flat()
 
@@ -19,7 +17,7 @@ describe("Map", () => {
         expect(floorTiles.length).toBeGreaterThan(1)
 
         const connectedFloorTiles = floorTiles.filter(floor => {
-            const { x, y } = floor.getCoordinates()
+            const { x, y } = floor.coordinates
             const adjacentTiles = [
                 map.getTile(x + 1, y),
                 map.getTile(x - 1, y),
@@ -52,7 +50,7 @@ describe("Map", () => {
     test("getAdjacentTiles should return adjacent tiles to passed tile, in random order", () => {
         const map = new Map()
         const randomTile = map.getRandomPassableTile()
-        const { x, y } = randomTile.getCoordinates()
+        const { x, y } = randomTile.coordinates
 
         const adjacentTiles = map.getAdjacentTiles(randomTile)
 

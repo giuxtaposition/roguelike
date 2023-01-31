@@ -11,11 +11,11 @@ describe("Black", () => {
     test("new Slime should have sprite 7 and health 1", () => {
         const slime = new Slime(new Floor(0, 0, map))
 
-        expect(slime.getSprite()).toBe(7)
-        expect(slime.getHealth()).toBe(1)
-        expect(slime.getIsStunned()).toBeFalsy()
-        expect(slime.getIsPlayer()).toBeFalsy()
-        expect(slime.getIsAlive()).toBeTruthy()
+        expect(slime.sprite).toBe(7)
+        expect(slime.health).toBe(1)
+        expect(slime.isStunned).toBeFalsy()
+        expect(slime.isPlayer).toBeFalsy()
+        expect(slime.isAlive).toBeTruthy()
     })
 
     test("doEntityBehavior should try to eat nearby walls and restore health", () => {
@@ -27,7 +27,7 @@ describe("Black", () => {
 
         update(slime, adjacentTiles, player, vi.fn(), 2)
 
-        expect(slime.getHealth()).toBe(1.5)
+        expect(slime.health).toBe(1.5)
         expect(map.getTile(2, 1)).toBeInstanceOf(Floor)
         expect(tryToMove).not.toHaveBeenCalled()
     })

@@ -19,8 +19,8 @@ export class Slime extends Entity {
     ) {
         const walls = adjacentTiles.filter(
             tile =>
-                !tile.getIsPassable() &&
-                Map.inBounds(tile.getCoordinates().x, tile.getCoordinates().y)
+                !tile.isPassable &&
+                Map.inBounds(tile.coordinates.x, tile.coordinates.y)
         )
 
         if (walls.length) {

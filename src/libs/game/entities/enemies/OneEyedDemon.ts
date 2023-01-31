@@ -16,12 +16,12 @@ export class OneEyedDemon extends Entity {
             distanceY: number
         ) => Tile
     ): void {
-        let startedStunned = this.isStunned
+        let startedStunned = this._isStunned
 
         super.update(adjacentPassableTiles, player, getTileAtDistanceXY)
 
         if (!startedStunned) {
-            this.isStunned = true
+            this._isStunned = true
         }
     }
 }

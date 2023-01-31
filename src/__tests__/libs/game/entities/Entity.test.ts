@@ -14,8 +14,8 @@ describe("Entities", () => {
         const newTile = new Floor(4, 5, map)
         player.tryToMove(newTile)
 
-        expect(player.getTile()).toEqual(newTile)
-        expect(newTile.getEntity()).toEqual(player)
+        expect(player.tile).toEqual(newTile)
+        expect(newTile.entity).toEqual(player)
     })
 
     test("tryToMove should not move entity to chosen tile if not passable", () => {
@@ -23,8 +23,8 @@ describe("Entities", () => {
         const player = new Player(startingTile, 3)
         player.tryToMove(new Wall(4, 5, map))
 
-        expect(player.getTile()).toEqual(startingTile)
-        expect(startingTile.getEntity()).toEqual(player)
+        expect(player.tile).toEqual(startingTile)
+        expect(startingTile.entity).toEqual(player)
     })
 
     test("tryToMove should not move entity to chosen tile if occupied but should attack", () => {
@@ -34,10 +34,10 @@ describe("Entities", () => {
         const enemy = new OneEyedDemon(newTile)
         player.tryToMove(newTile)
 
-        expect(player.getTile()).toEqual(startingTile)
-        expect(startingTile.getEntity()).toEqual(player)
-        expect(enemy.getHealth()).toBe(2)
-        expect(enemy.getIsStunned()).toBeTruthy()
+        expect(player.tile).toEqual(startingTile)
+        expect(startingTile.entity).toEqual(player)
+        expect(enemy.health).toBe(2)
+        expect(enemy.isStunned).toBeTruthy()
     })
 
     test("update should do nothing until entity finished teleporting", () => {
@@ -123,14 +123,14 @@ describe("Entities", () => {
         const oneEyedDemon = new OneEyedDemon(new Floor(0, 0, map))
 
         oneEyedDemon.receiveDamage(1)
-        expect(oneEyedDemon.getHealth()).toBe(2)
+        expect(oneEyedDemon.health).toBe(2)
     })
 
     test("receiveDamage should update alive status if health points are lower than 0", () => {
         const oneEyedDemon = new OneEyedDemon(new Floor(0, 0, map))
 
         oneEyedDemon.receiveDamage(3)
-        expect(oneEyedDemon.getHealth()).toBe(0)
-        expect(oneEyedDemon.getIsAlive()).toBeFalsy()
+        expect(oneEyedDemon.health).toBe(0)
+        expect(oneEyedDemon.isAlive).toBeFalsy()
     })
 })

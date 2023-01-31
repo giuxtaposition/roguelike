@@ -16,7 +16,7 @@
     $: setInterval(draw, 15)
 
     function onKeyPress(e: KeyboardEvent) {
-        switch (game.getGameState()) {
+        switch (game.gameState) {
             case GameState.Title:
                 game.start()
                 break
@@ -28,6 +28,8 @@
                 if (e.key == "s") game.movePlayer(Direction.DOWN)
                 if (e.key == "a") game.movePlayer(Direction.LEFT)
                 if (e.key == "d") game.movePlayer(Direction.RIGHT)
+                if (parseInt(e.key) >= 1 && parseInt(e.key) <= 9)
+                    game.castSpell(parseInt(e.key) - 1)
                 break
             default:
                 break
@@ -37,7 +39,7 @@
     function showTitle() {
         context.fillStyle = "rgba(0,0,0,.75)"
         context.fillRect(0, 0, canvas.width, canvas.height)
-        game.setGameState(GameState.Title)
+        game.gameState = GameState.Title
 
         drawText("a simple", 40, true, canvas.height / 2 - 110, "white")
         drawText("ROGUELIKE", 70, true, canvas.height / 2 - 50, "white")
@@ -46,27 +48,27 @@
 
     function draw() {
         if (
-            game.getGameState() === GameState.Running ||
-            game.getGameState() === GameState.GameOver
+            game.gameState === GameState.Running ||
+            game.gameState === GameState.GameOver
         ) {
             context.clearRect(0, 0, canvas.width, canvas.height)
             drawTiles()
             drawPlayer()
             drawEnemies()
-            drawText("Level: " + game.getLevel(), 30, false, 40, "#bd516d")
-            drawText("Score: " + game.getScore(), 30, false, 70, "#bd516d")
+            drawText("Level: " + game.level, 30, false, 40, "#bd516d")
+            drawText("Score: " + game.score, 30, false, 70, "#bd516d")
         }
     }
 
     function drawEnemies() {
-        for (let i = 0; i < game.getEnemies().length; i++) {
-            const enemy = game.getEnemies()[i]
-            const { x, y } = enemy.getDisplayCoordinates()
+        for (let i = 0; i < game.enemies.length; i++) {
+            const enemy = game.enemies[i]
+            const { x, y } = enemy.displayCoordinates
 
-            if (enemy.getTeleportCounter() > 0) {
+            if (enemy.teleportCounter > 0) {
                 drawSprite(10, x, y)
             } else {
-                drawSprite(enemy.getSprite(), x, y)
+                drawSprite(enemy.sprite, x, y)
                 drawHealth(enemy, x, y)
             }
 
@@ -75,21 +77,35 @@
     }
 
     function drawPlayer() {
-        const player = game.getPlayer()
-        const { x, y } = player.getDisplayCoordinates()
-        drawSprite(player.getSprite(), x, y)
+        const player = game.player
+        const { x, y } = player.displayCoordinates
+        drawSprite(player.sprite, x, y)
         drawHealth(player, x, y)
         player.smoothMoveAnimation()
+
+        for (let i = 0; i < player.spellNames.length; i++) {
+            let spellText = i + 1 + ") " + (player.spellNames[i] || "")
+
+            drawText(spellText, 20, false, 110 + i * 40, "#81c0c6")
+        }
     }
 
     function drawTiles() {
         for (let i = 0; i < Map.numTiles; i++) {
             for (let j = 0; j < Map.numTiles; j++) {
-                const tile = game.getMap().getTile(i, j)
-                const { x, y } = tile.getCoordinates()
-                drawSprite(tile.getSprite(), x, y)
-                if (tile.getTreasure()) {
+                const tile = game.map.getTile(i, j)
+                const { x, y } = tile.coordinates
+                drawSprite(tile.sprite, x, y)
+
+                if (tile.hasTreasure) {
                     drawSprite(12, x, y)
+                }
+
+                if (tile.effectCounter) {
+                    tile.effectCounter -= 1
+                    context.globalAlpha = tile.effectCounter / 30
+                    drawSprite(tile.effect, x, y)
+                    context.globalAlpha = 1
                 }
             }
         }
@@ -110,7 +126,7 @@
     }
 
     function drawHealth(entity: Entity, x: number, y: number) {
-        for (let i = 0; i < entity.getHealth(); i++) {
+        for (let i = 0; i < entity.health; i++) {
             drawSprite(
                 9,
                 x + (i % 3) * (4 / 16),

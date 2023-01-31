@@ -11,11 +11,11 @@ describe("CoolDuck", () => {
     test("new CoolDuck should have sprite 4 and health 3", () => {
         const coolDuck = new CoolDuck(new Floor(0, 0, map))
 
-        expect(coolDuck.getSprite()).toBe(4)
-        expect(coolDuck.getHealth()).toBe(3)
-        expect(coolDuck.getIsStunned()).toBeFalsy()
-        expect(coolDuck.getIsPlayer()).toBeFalsy()
-        expect(coolDuck.getIsAlive()).toBeTruthy()
+        expect(coolDuck.sprite).toBe(4)
+        expect(coolDuck.health).toBe(3)
+        expect(coolDuck.isStunned).toBeFalsy()
+        expect(coolDuck.isPlayer).toBeFalsy()
+        expect(coolDuck.isAlive).toBeTruthy()
     })
 
     test("update should follow normal entity update", () => {

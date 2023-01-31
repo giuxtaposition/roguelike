@@ -11,11 +11,11 @@ describe("OneEyedDemon", () => {
     test("new OneEyedDemon should have sprite 8 and health 3", () => {
         const oneEyedDemon = new OneEyedDemon(new Floor(0, 0, map))
 
-        expect(oneEyedDemon.getSprite()).toBe(8)
-        expect(oneEyedDemon.getHealth()).toBe(3)
-        expect(oneEyedDemon.getIsStunned()).toBeFalsy()
-        expect(oneEyedDemon.getIsPlayer()).toBeFalsy()
-        expect(oneEyedDemon.getIsAlive()).toBeTruthy()
+        expect(oneEyedDemon.sprite).toBe(8)
+        expect(oneEyedDemon.health).toBe(3)
+        expect(oneEyedDemon.isStunned).toBeFalsy()
+        expect(oneEyedDemon.isPlayer).toBeFalsy()
+        expect(oneEyedDemon.isAlive).toBeTruthy()
     })
 
     test("update should stun OneEyedDemon if not already stunned", () => {
@@ -35,6 +35,6 @@ describe("OneEyedDemon", () => {
             1
         )
 
-        expect(oneEyedDemon.getIsStunned()).toBeTruthy()
+        expect(oneEyedDemon.isStunned).toBeTruthy()
     })
 })

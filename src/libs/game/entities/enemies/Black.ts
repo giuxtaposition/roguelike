@@ -17,20 +17,17 @@ export class Black extends Entity {
         ) => Tile
     ) {
         let adjacentPassableTiles = adjacentTiles.filter(
-            tile =>
-                tile.getIsPassable() &&
-                (!tile.getEntity() || tile.getEntity().getIsPlayer())
+            tile => tile.isPassable && (!tile.entity || tile.entity.isPlayer)
         )
 
         if (adjacentPassableTiles.length) {
             const { x: neighborX, y: neighborY } =
-                adjacentPassableTiles[0].getCoordinates()
-            const { x: currentTileX, y: currentTileY } =
-                this.tile.getCoordinates()
+                adjacentPassableTiles[0].coordinates
+            const { x: currentTileX, y: currentTileY } = this._tile.coordinates
 
             this.tryToMove(
                 getTileAtDistanceXY(
-                    this.getTile(),
+                    this._tile,
                     neighborX - currentTileX,
                     neighborY - currentTileY
                 )

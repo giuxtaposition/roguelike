@@ -11,11 +11,11 @@ describe("Black", () => {
     test("new Black should have sprite 6 and health 2", () => {
         const black = new Black(new Floor(0, 0, map))
 
-        expect(black.getSprite()).toBe(6)
-        expect(black.getHealth()).toBe(2)
-        expect(black.getIsStunned()).toBeFalsy()
-        expect(black.getIsPlayer()).toBeFalsy()
-        expect(black.getIsAlive()).toBeTruthy()
+        expect(black.sprite).toBe(6)
+        expect(black.health).toBe(2)
+        expect(black.isStunned).toBeFalsy()
+        expect(black.isPlayer).toBeFalsy()
+        expect(black.isAlive).toBeTruthy()
     })
 
     test("update should move Black randomly without using manhattan distance", () => {

@@ -16,27 +16,27 @@ import Map from "./Map"
 import { Exit, Tile } from "./Tile"
 
 export default class Game {
-    private startingHealth = 3
-    private maxHealth = 10
-    private maxLevel = 6
-    private gameState = GameState.Loading
-    private score = 0
-    private enemies: Entity[] = []
-    private level: number
-    private map: Map
-    private player: Player
-    private spawnRate: number
-    private spawnCounter: number
-    private scoreStore: scoreStore
+    private _startingHealth = 3
+    private _maxHealth = 10
+    private _maxLevel = 6
+    private _gameState = GameState.Loading
+    private _score = 0
+    private _enemies: Entity[] = []
+    private _level: number
+    private _map: Map
+    private _player: Player
+    private _spawnRate: number
+    private _spawnCounter: number
+    private _scoreStore: scoreStore
 
     constructor(scoreStore: scoreStore) {
-        this.scoreStore = scoreStore
+        this._scoreStore = scoreStore
     }
 
     public start() {
-        this.level = 1
-        this.startLevel(this.startingHealth)
-        this.gameState = GameState.Running
+        this._level = 1
+        this.startLevel(this._startingHealth)
+        this._gameState = GameState.Running
     }
 
     public movePlayer(direction: Direction) {
@@ -63,61 +63,68 @@ export default class Game {
         }
     }
 
-    public getScore() {
-        return this.score
-    }
-
-    public getGameState() {
-        return this.gameState
-    }
-
-    public setGameState(gameState: GameState) {
-        this.gameState = gameState
-    }
-
-    public getPlayer() {
-        return this.player
-    }
-
-    public getMap() {
-        return this.map
-    }
-
-    public getEnemies() {
-        return this.enemies
-    }
-
-    public getMaxHealth() {
-        return this.maxHealth
-    }
-
-    public getLevel() {
-        return this.level
-    }
-
-    public updateLevel() {
-        this.level += 1
-    }
-
-    public getMaxLevel() {
-        return this.maxLevel
+    public castSpell(spellIndex: number) {
+        this._player.castSpell(spellIndex, this._map, this._player)
     }
 
     public startLevel(playerHealth: number) {
-        this.enemies = []
-        this.spawnRate = 15
-        this.spawnCounter = this.spawnRate
+        this._enemies = []
+        this._spawnRate = 15
+        this._spawnCounter = this._spawnRate
         this.generateLevel()
-        this.player = new Player(this.map.getRandomPassableTile(), playerHealth)
-        this.map.getRandomPassableTile().replace(Exit)
+        this._player = new Player(
+            this._map.getRandomPassableTile(),
+            playerHealth
+        )
+        this._map.getRandomPassableTile().replace(Exit)
+    }
+
+    public get score() {
+        return this._score
+    }
+
+    public get gameState() {
+        return this._gameState
+    }
+
+    public set gameState(gameState: GameState) {
+        this._gameState = gameState
+    }
+
+    public get player() {
+        return this._player
+    }
+
+    public get map() {
+        return this._map
+    }
+
+    public get enemies() {
+        return this._enemies
+    }
+
+    public get maxHealth() {
+        return this._maxHealth
+    }
+
+    public get level() {
+        return this._level
+    }
+
+    public set level(level: number) {
+        this._level = level
+    }
+
+    public get maxLevel() {
+        return this._maxLevel
     }
 
     private addScore(won: boolean) {
-        let scores = this.scoreStore.get()
+        let scores = this._scoreStore.get()
         let scoreObject: ScoreObject = {
-            score: this.score,
+            score: this._score,
             run: 1,
-            totalScore: this.score,
+            totalScore: this._score,
             active: won,
         }
 
@@ -135,95 +142,91 @@ export default class Game {
 
         scores.push(scoreObject)
 
-        this.scoreStore.set(scores)
+        this._scoreStore.set(scores)
     }
 
     private tick() {
-        for (let i = this.enemies.length - 1; i >= 0; i--) {
-            const currentEnemy = this.enemies[i]
-            if (currentEnemy.getIsAlive()) {
+        for (let i = this._enemies.length - 1; i >= 0; i--) {
+            const currentEnemy = this._enemies[i]
+            if (currentEnemy.isAlive) {
                 currentEnemy.update(
-                    this.map.getAdjacentTiles(currentEnemy.getTile()),
-                    this.player,
-                    this.map.getTileAtDistanceXY.bind(this.map)
+                    this._map.getAdjacentTiles(currentEnemy.tile),
+                    this._player,
+                    this._map.getTileAtDistanceXY.bind(this._map)
                 )
             } else {
                 this.removeEnemy(i)
             }
         }
 
-        if (!this.player.getIsAlive()) {
+        if (!this._player.isAlive) {
             this.addScore(false)
-            this.gameState = GameState.GameOver
+            this._gameState = GameState.GameOver
         }
 
-        this.spawnCounter--
-        if (this.spawnCounter <= 0) {
+        this._spawnCounter--
+        if (this._spawnCounter <= 0) {
             this.spawnEnemies()
-            this.spawnCounter = this.spawnRate
-            this.spawnRate--
+            this._spawnCounter = this._spawnRate
+            this._spawnRate--
         }
     }
 
     private tryToMovePlayer(distanceX: number, distanceY: number): boolean {
-        const destinationTile = this.map.getTileAtDistanceXY(
-            this.player.getTile(),
+        const destinationTile = this._map.getTileAtDistanceXY(
+            this._player.tile,
             distanceX,
             distanceY
         )
 
-        if (destinationTile instanceof Exit && !destinationTile.getEntity()) {
+        if (destinationTile instanceof Exit && !destinationTile.entity) {
             this.playerSteppedOnExitTile()
         }
 
-        if (destinationTile.getTreasure()) {
+        if (destinationTile.hasTreasure) {
             this.playerSteppedOnTreasure(destinationTile)
         }
 
-        return this.player.tryToMove(destinationTile)
+        return this._player.tryToMove(destinationTile)
     }
 
     private playerSteppedOnExitTile() {
         playSound("newLevel")
-        if (this.level == this.maxLevel) {
+        if (this._level == this._maxLevel) {
             this.addScore(true)
-            this.setGameState(GameState.GameOver)
+            this._gameState = GameState.GameOver
         } else {
-            this.level += 1
+            this._level += 1
 
-            this.startLevel(
-                Math.min(this.maxHealth, this.player.getHealth() + 1)
-            )
+            this.startLevel(Math.min(this._maxHealth, this._player.health + 1))
         }
     }
 
     private playerSteppedOnTreasure(tile: Tile) {
         playSound("treasure")
-        this.score += 1
-        tile.setTreasure(false)
+        this._score += 1
+        tile.hasTreasure = false
         this.spawnEnemies()
     }
 
     private removeEnemy(index: number) {
-        this.enemies.splice(index, 1)
+        this._enemies.splice(index, 1)
     }
 
     private generateLevel() {
-        this.map = new Map()
-
+        this._map = new Map()
         this.generateEnemies()
-
         this.generateTreasures()
     }
 
     private generateTreasures() {
         for (let i = 0; i < 3; i++) {
-            this.map.getRandomPassableTile().setTreasure(true)
+            this._map.getRandomPassableTile().hasTreasure = true
         }
     }
 
     private generateEnemies() {
-        let numberOfEnemies = this.level + 1
+        let numberOfEnemies = this._level + 1
 
         for (let i = 0; i < numberOfEnemies; i++) {
             this.spawnEnemies()
@@ -239,7 +242,7 @@ export default class Game {
             OneEyedDemon,
         ])[0]
 
-        this.enemies.push(new enemyType(this.map.getRandomPassableTile()))
+        this._enemies.push(new enemyType(this._map.getRandomPassableTile()))
     }
 }
 

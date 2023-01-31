@@ -3,6 +3,7 @@ import { Exit, Floor, Wall } from "../../../libs/game/Tile"
 import { vi } from "vitest"
 import { CoolDuck } from "../../../libs/game/entities/enemies"
 import { scores } from "../../../libs/stores/scores"
+import { Player } from "../../../libs/game/entities/Player"
 
 describe("Game", () => {
     let game: Game
@@ -12,7 +13,7 @@ describe("Game", () => {
     })
 
     test("new Game should have loading game state", () => {
-        expect(game.getGameState()).toEqual(GameState.Loading)
+        expect(game.gameState).toEqual(GameState.Loading)
     })
 
     describe("has started", () => {
@@ -21,15 +22,13 @@ describe("Game", () => {
         })
 
         test("after start should have game state running and generate map with enemies and treasures", () => {
-            expect(game.getMap()).toBeDefined()
-            expect(game.getEnemies().length).toBeGreaterThan(0)
-            expect(game.getGameState()).toEqual(GameState.Running)
+            expect(game.map).toBeDefined()
+            expect(game.enemies.length).toBeGreaterThan(0)
+            expect(game.gameState).toEqual(GameState.Running)
             expect(
-                game
-                    .getMap()
-                    .getTiles()
-                    .flatMap(row => row.filter(tile => tile.getTreasure()))
-                    .length
+                game.map.tiles.flatMap(row =>
+                    row.filter(tile => tile.hasTreasure)
+                ).length
             ).toBe(3)
         })
 
@@ -42,82 +41,58 @@ describe("Game", () => {
         `(
             "movePlayer should move player to chosen direction if tile is passable and free",
             ({ direction, x, y }) => {
-                const { x: playerX, y: playerY } = game
-                    .getPlayer()
-                    .getTile()
-                    .getCoordinates()
+                const { x: playerX, y: playerY } = game.player.tile.coordinates
 
-                game.getMap().getTile = vi
+                game.map.getTile = vi
                     .fn()
                     .mockReturnValue(
-                        new Floor(playerX + x, playerY + y, game.getMap())
+                        new Floor(playerX + x, playerY + y, game.map)
                     )
 
                 game.movePlayer(direction)
-                let { x: newX, y: newY } = game
-                    .getPlayer()
-                    .getTile()
-                    .getCoordinates()
+                let { x: newX, y: newY } = game.player.tile.coordinates
                 expect(newX).toBe(playerX + x)
                 expect(newY).toBe(playerY + y)
             }
         )
 
         test("movePlayer should not move player to chosen direction if it is towards a wall", () => {
-            const { x: startingX, y: startingY } = game
-                .getPlayer()
-                .getTile()
-                .getCoordinates()
+            const { x: startingX, y: startingY } = game.player.tile.coordinates
 
-            game.getMap().getTile = vi
+            game.map.getTile = vi
                 .fn()
-                .mockReturnValue(
-                    new Wall(startingX, startingY + 1, game.getMap())
-                )
+                .mockReturnValue(new Wall(startingX, startingY + 1, game.map))
 
             game.movePlayer(Direction.DOWN)
-            let { x: newX, y: newY } = game
-                .getPlayer()
-                .getTile()
-                .getCoordinates()
+            let { x: newX, y: newY } = game.player.tile.coordinates
             expect(startingX).toBe(newX)
             expect(startingY).toBe(newY)
         })
 
         test("movePlayer should not move player to chosen direction if tile is already occupied, instead should attack monster", () => {
-            const { x: startingX, y: startingY } = game
-                .getPlayer()
-                .getTile()
-                .getCoordinates()
+            const { x: startingX, y: startingY } = game.player.tile.coordinates
 
-            const occupiedTile = new Floor(
-                startingX,
-                startingY + 1,
-                game.getMap()
-            )
+            const occupiedTile = new Floor(startingX, startingY + 1, game.map)
             new CoolDuck(occupiedTile)
 
-            game.getMap().getTile = vi.fn().mockReturnValue(occupiedTile)
+            game.map.getTile = vi.fn().mockReturnValue(occupiedTile)
 
             game.movePlayer(Direction.DOWN)
-            let { x: newX, y: newY } = game
-                .getPlayer()
-                .getTile()
-                .getCoordinates()
+            let { x: newX, y: newY } = game.player.tile.coordinates
             expect(startingX).toBe(newX)
             expect(startingY).toBe(newY)
-            expect(occupiedTile.getEntity().getHealth()).toBe(2)
+            expect(occupiedTile.entity.health).toBe(2)
         })
 
         test("if player has moved successfully advance game tick", () => {
-            const { x, y } = game.getPlayer().getTile().getCoordinates()
+            const { x, y } = game.player.tile.coordinates
             const tick = vi.spyOn(Game.prototype as any, "tick")
-            game.getMap().getTile = vi
+            game.map.getTile = vi
                 .fn()
-                .mockImplementation(() => new Floor(x, y + 1, game.getMap()))
-            game.getMap().getAdjacentPassableTiles = vi
+                .mockImplementation(() => new Floor(x, y + 1, game.map))
+            game.map.getAdjacentPassableTiles = vi
                 .fn()
-                .mockReturnValue([new Floor(x, y + 1, game.getMap())])
+                .mockReturnValue([new Floor(x, y + 1, game.map)])
 
             game.movePlayer(Direction.DOWN)
 
@@ -125,12 +100,12 @@ describe("Game", () => {
         })
 
         test("if player has not moved because of wall or entity, do not advance game tick", () => {
-            const { x, y } = game.getPlayer().getTile().getCoordinates()
+            const { x, y } = game.player.tile.coordinates
             const tick = vi.spyOn(Game.prototype as any, "tick")
-            game.getMap().getTile = vi
+            game.map.getTile = vi
                 .fn()
-                .mockImplementation(() => new Wall(x, y + 1, game.getMap()))
-            game.getMap().getAdjacentPassableTiles = vi.fn().mockReturnValue([])
+                .mockImplementation(() => new Wall(x, y + 1, game.map))
+            game.map.getAdjacentPassableTiles = vi.fn().mockReturnValue([])
 
             game.movePlayer(Direction.DOWN)
 
@@ -138,58 +113,56 @@ describe("Game", () => {
         })
 
         test("if player is dead game state should be game over", () => {
-            game.getPlayer().getIsAlive = vi.fn().mockReturnValue(false)
-            game.getPlayer().tryToMove = vi.fn().mockReturnValue(true)
+            vi.spyOn(Player.prototype, "isAlive", "get").mockReturnValue(false)
+            game.player.tryToMove = vi.fn().mockReturnValue(true)
 
             game.movePlayer(Direction.RIGHT)
 
-            expect(game.getGameState()).toEqual(GameState.GameOver)
+            expect(game.gameState).toEqual(GameState.GameOver)
         })
 
         test("spawn another enemy after 15 turns", () => {
-            game.getPlayer().tryToMove = vi.fn().mockReturnValue(true)
+            game.player.tryToMove = vi.fn().mockReturnValue(true)
 
             for (let index = 0; index <= 15; index++) {
                 game.movePlayer(Direction.RIGHT)
             }
 
-            expect(game.getEnemies().length).toBe(3)
+            expect(game.enemies.length).toBe(3)
         })
 
         test("if player steps on Exit start next level", () => {
-            game.getMap().getTileAtDistanceXY = vi
+            game.map.getTileAtDistanceXY = vi
                 .fn()
-                .mockReturnValue(new Exit(1, 1, game.getMap()))
+                .mockReturnValue(new Exit(1, 1, game.map))
 
             game.movePlayer(Direction.DOWN)
 
-            expect(game.getLevel()).toBe(2)
-            expect(game.getPlayer().getHealth()).toBe(4)
-            expect(game.getEnemies().length).toBe(3)
+            expect(game.level).toBe(2)
+            expect(game.player.health).toBe(4)
+            expect(game.enemies.length).toBe(3)
         })
 
         test("if player steps on Exit and it is the last level, game over", () => {
-            for (let index = 1; index <= game.getMaxLevel(); index++) {
-                game.getMap().getTileAtDistanceXY = vi
+            for (let index = 1; index <= game.maxLevel; index++) {
+                game.map.getTileAtDistanceXY = vi
                     .fn()
-                    .mockReturnValue(new Exit(index, index, game.getMap()))
+                    .mockReturnValue(new Exit(index, index, game.map))
                 game.movePlayer(Direction.DOWN)
             }
 
-            expect(game.getGameState()).toEqual(GameState.GameOver)
+            expect(game.gameState).toEqual(GameState.GameOver)
         })
 
         test("if player steps on treasure add 1 to score and spawn new enemy", () => {
-            const treasureTile = new Floor(1, 1, game.getMap())
-            treasureTile.setTreasure(true)
-            game.getMap().getTileAtDistanceXY = vi
-                .fn()
-                .mockReturnValue(treasureTile)
+            const treasureTile = new Floor(1, 1, game.map)
+            treasureTile.hasTreasure = true
+            game.map.getTileAtDistanceXY = vi.fn().mockReturnValue(treasureTile)
 
             game.movePlayer(Direction.DOWN)
 
-            expect(game.getScore()).toBe(1)
-            expect(game.getEnemies().length).toBe(3)
+            expect(game.score).toBe(1)
+            expect(game.enemies.length).toBe(3)
         })
     })
 })

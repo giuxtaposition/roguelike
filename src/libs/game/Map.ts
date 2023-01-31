@@ -7,7 +7,7 @@ export default class Map {
     static readonly numTiles = 12
     static readonly uiWidth = 4
 
-    private tiles: Tile[][] = []
+    private _tiles: Tile[][] = []
 
     constructor() {
         tryTo("generate map", () => {
@@ -23,12 +23,12 @@ export default class Map {
         distanceX: number,
         distanceY: number
     ): Tile {
-        const { x, y } = tile.getCoordinates()
+        const { x, y } = tile.coordinates
         return this.getTile(x + distanceX, y + distanceY)
     }
 
     public getAdjacentPassableTiles(tile: Tile): Tile[] {
-        return this.getAdjacentTiles(tile).filter(tile => tile.getIsPassable())
+        return this.getAdjacentTiles(tile).filter(tile => tile.isPassable)
     }
 
     public getRandomPassableTile(): Tile {
@@ -38,7 +38,7 @@ export default class Map {
             let x = randomRange(0, Map.numTiles - 1)
             let y = randomRange(0, Map.numTiles - 1)
             tile = this.getTile(x, y)
-            return tile.getIsPassable()
+            return tile.isPassable
         })
 
         return tile
@@ -46,14 +46,14 @@ export default class Map {
 
     public getTile(x: number, y: number): Tile {
         if (Map.inBounds(x, y)) {
-            return this.tiles[x][y]
+            return this._tiles[x][y]
         } else {
             return new Wall(x, y, this)
         }
     }
 
     public getAdjacentTiles(tile: Tile): Tile[] {
-        const { x, y } = tile.getCoordinates()
+        const { x, y } = tile.coordinates
         return shuffle([
             this.getTile(x, y - 1),
             this.getTile(x, y + 1),
@@ -62,8 +62,8 @@ export default class Map {
         ])
     }
 
-    public getTiles() {
-        return this.tiles
+    public get tiles() {
+        return this._tiles
     }
 
     public static inBounds(x: number, y: number) {
@@ -74,12 +74,12 @@ export default class Map {
         let passableTiles = 0
 
         for (let i = 0; i < Map.numTiles; i++) {
-            this.tiles[i] = []
+            this._tiles[i] = []
             for (let j = 0; j < Map.numTiles; j++) {
                 if (Math.random() < 0.3 || !Map.inBounds(i, j)) {
-                    this.tiles[i][j] = new Wall(i, j, this)
+                    this._tiles[i][j] = new Wall(i, j, this)
                 } else {
-                    this.tiles[i][j] = new Floor(i, j, this)
+                    this._tiles[i][j] = new Floor(i, j, this)
 
                     passableTiles++
                 }

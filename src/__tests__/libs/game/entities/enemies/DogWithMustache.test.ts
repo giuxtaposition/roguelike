@@ -11,11 +11,11 @@ describe("DogWithMustache", () => {
     test("new DogWithMustache should have sprite 5 and health 1", () => {
         const dogWithMustache = new DogWithMustache(new Floor(0, 0, map))
 
-        expect(dogWithMustache.getSprite()).toBe(5)
-        expect(dogWithMustache.getHealth()).toBe(1)
-        expect(dogWithMustache.getIsStunned()).toBeFalsy()
-        expect(dogWithMustache.getIsPlayer()).toBeFalsy()
-        expect(dogWithMustache.getIsAlive()).toBeTruthy()
+        expect(dogWithMustache.sprite).toBe(5)
+        expect(dogWithMustache.health).toBe(1)
+        expect(dogWithMustache.isStunned).toBeFalsy()
+        expect(dogWithMustache.isPlayer).toBeFalsy()
+        expect(dogWithMustache.isAlive).toBeTruthy()
     })
 
     test("doEntityBehavior should move DogWithMustache twice but attack once", () => {

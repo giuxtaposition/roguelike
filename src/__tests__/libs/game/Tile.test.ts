@@ -1,4 +1,4 @@
-import { Floor, Wall } from "../../../libs/game/Tile"
+import { Exit, Floor, Wall } from "../../../libs/game/Tile"
 import Map from "../../../libs/game/Map"
 
 describe("Tiles", () => {
@@ -6,15 +6,22 @@ describe("Tiles", () => {
     test("new floor tile should be passable and have sprite number 2", () => {
         const floor = new Floor(1, 1, map)
 
-        expect(floor.getIsPassable()).toBeTruthy()
-        expect(floor.getSprite()).toBe(2)
+        expect(floor.isPassable).toBeTruthy()
+        expect(floor.sprite).toBe(2)
     })
 
     test("new wall tile should not be passable and have sprite number 3", () => {
         const wall = new Wall(1, 1, map)
 
-        expect(wall.getIsPassable()).toBeFalsy()
-        expect(wall.getSprite()).toBe(3)
+        expect(wall.isPassable).toBeFalsy()
+        expect(wall.sprite).toBe(3)
+    })
+
+    test("new exit tile should not be passable and have sprite number 3", () => {
+        const wall = new Exit(1, 1, map)
+
+        expect(wall.isPassable).toBeTruthy()
+        expect(wall.sprite).toBe(11)
     })
 
     test("distance should return the manhattan distance between the tile and other element x and y", () => {

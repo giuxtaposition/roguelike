@@ -16,10 +16,10 @@ export class DogWithMustache extends Entity {
             distanceY: number
         ) => Tile
     ) {
-        this.hasAttackedThisTurn = false
+        this._hasAttackedThisTurn = false
         super.doEntityBehavior(adjacentTiles, player, getTileAtDistanceXY)
 
-        if (!this.hasAttackedThisTurn) {
+        if (!this._hasAttackedThisTurn) {
             super.doEntityBehavior(adjacentTiles, player, getTileAtDistanceXY)
         }
     }
