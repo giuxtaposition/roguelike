@@ -9,16 +9,6 @@ import { update } from "../../../helpers/helpers"
 describe("Entities", () => {
     const map = new Map()
 
-    beforeAll(() => {
-        vi.spyOn(window.HTMLMediaElement.prototype, "play").mockImplementation(
-            async () => {}
-        )
-    })
-
-    afterAll(() => {
-        vi.resetAllMocks()
-    })
-
     test("tryToMove should move entity to chosen tile if passable", () => {
         const player = new Player(new Floor(0, 0, map), 3)
         const newTile = new Floor(4, 5, map)

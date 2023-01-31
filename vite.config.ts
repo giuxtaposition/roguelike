@@ -7,6 +7,7 @@ export default defineConfig({
         include: ["src/**/*.{test,spec}.{js,ts}"],
         globals: true,
         environment: "jsdom",
+        setupFiles: ["src/__tests__/testSetup.ts"],
     },
     base: "/roguelike/",
 })
