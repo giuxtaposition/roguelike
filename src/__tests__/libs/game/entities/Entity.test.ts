@@ -1,4 +1,4 @@
-import { vi } from "vitest"
+import { afterAll, vi } from "vitest"
 
 import { Floor, Wall } from "../../../../libs/game/Tile"
 import Map from "../../../../libs/game/Map"
@@ -8,6 +8,16 @@ import { update } from "../../../helpers/helpers"
 
 describe("Entities", () => {
     const map = new Map()
+
+    beforeAll(() => {
+        vi.spyOn(window.HTMLMediaElement.prototype, "play").mockImplementation(
+            async () => {}
+        )
+    })
+
+    afterAll(() => {
+        vi.resetAllMocks()
+    })
 
     test("tryToMove should move entity to chosen tile if passable", () => {
         const player = new Player(new Floor(0, 0, map), 3)

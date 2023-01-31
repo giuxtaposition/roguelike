@@ -43,16 +43,24 @@ export default class Game {
         let moved = false
         switch (direction) {
             case Direction.UP:
-                moved = this.tryToMovePlayer(0, -1)
+                moved = this.tryToMovePlayer(
+                    this._map.getTileAtDistanceXY(this._player.tile, 0, -1)
+                )
                 break
             case Direction.DOWN:
-                moved = this.tryToMovePlayer(0, 1)
+                moved = this.tryToMovePlayer(
+                    this._map.getTileAtDistanceXY(this._player.tile, 0, 1)
+                )
                 break
             case Direction.LEFT:
-                moved = this.tryToMovePlayer(-1, 0)
+                moved = this.tryToMovePlayer(
+                    this._map.getTileAtDistanceXY(this._player.tile, -1, 0)
+                )
                 break
             case Direction.RIGHT:
-                moved = this.tryToMovePlayer(1, 0)
+                moved = this.tryToMovePlayer(
+                    this._map.getTileAtDistanceXY(this._player.tile, 1, 0)
+                )
                 break
             default:
                 break
@@ -63,8 +71,20 @@ export default class Game {
         }
     }
 
+    public tryToMovePlayer(destinationTile: Tile): boolean {
+        if (destinationTile instanceof Exit && !destinationTile.entity) {
+            this.playerSteppedOnExitTile()
+        }
+
+        if (destinationTile.hasTreasure) {
+            this.playerSteppedOnTreasure(destinationTile)
+        }
+
+        return this._player.tryToMove(destinationTile)
+    }
+
     public castSpell(spellIndex: number) {
-        this._player.castSpell(spellIndex, this._map, this._player)
+        this._player.castSpell(spellIndex, this)
     }
 
     public startLevel(playerHealth: number) {
@@ -172,24 +192,6 @@ export default class Game {
         }
     }
 
-    private tryToMovePlayer(distanceX: number, distanceY: number): boolean {
-        const destinationTile = this._map.getTileAtDistanceXY(
-            this._player.tile,
-            distanceX,
-            distanceY
-        )
-
-        if (destinationTile instanceof Exit && !destinationTile.entity) {
-            this.playerSteppedOnExitTile()
-        }
-
-        if (destinationTile.hasTreasure) {
-            this.playerSteppedOnTreasure(destinationTile)
-        }
-
-        return this._player.tryToMove(destinationTile)
-    }
-
     private playerSteppedOnExitTile() {
         playSound("newLevel")
         if (this._level == this._maxLevel) {
@@ -205,6 +207,12 @@ export default class Game {
     private playerSteppedOnTreasure(tile: Tile) {
         playSound("treasure")
         this._score += 1
+
+        if (this._score % 3 == 0 && this._player.numberOfSpells < 9) {
+            this._player.numberOfSpells++
+            this._player.addRandomSpell()
+        }
+
         tile.hasTreasure = false
         this.spawnEnemies()
     }
